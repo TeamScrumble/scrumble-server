@@ -1,5 +1,5 @@
 # 빌드 스테이지: 최종 이미지 크기를 줄이기 위한 멀티 스테이지 빌드
-FROM eclipse-temurin:23-jdk-jammy as builder
+FROM openjdk:23-slim as builder
 
 WORKDIR /build
 
@@ -10,13 +10,12 @@ COPY build/libs/*.jar application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
 # 실행 스테이지: 실제 운영 환경에서 사용할 이미지
-FROM eclipse-temurin:23-jre-jammy-minimal
+FROM openjdk:23-slim
 
 WORKDIR /app
 
 # 보안을 위한 비-root 사용자 생성
-RUN addgroup --system --gid 1001 appgroup && \
-    adduser --system --uid 1001 --ingroup appgroup appuser
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 # 레이어별로 복사 (캐시 활용 최적화)
 COPY --from=builder /build/dependencies/ ./
