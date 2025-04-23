@@ -46,33 +46,33 @@ jobs:
       run: |
         docker build -t spring-app:latest .
 
-    - name: AWS Lightsail 컨테이너에 배포
-      uses: fdiesel/github-action-deploy-aws-lightsail-container@v2.0.1
+    - name: AWS 자격 증명 설정
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        image-name: spring-app
-        image: spring-app:latest
-        aws-region: ap-northeast-2
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-lightsail-service: ${{ secrets.BACKEND_SERVICE_NAME }}
-        aws-lightsail-service-config: >-
-          {
-            "containers": {
-              "spring": {
-                "ports": {
-                  "8080": "HTTP"
-                }
-              }
-            },
-            "publicEndpoint": {
-              "containerName": "spring",
-              "containerPort": 8080,
-              "healthCheck": {
-                "path": "/actuator/health",
-                "intervalSeconds": 10,
-                "timeoutSeconds": 5,
-                "unhealthyThreshold": 2,
-                "healthyThreshold": 2
-              }
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+
+    - name: AWS Lightsail 컨테이너에 배포
+      run: |
+        aws lightsail create-container-service-deployment \
+        --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
+        --containers '{
+          "spring": {
+            "image": "spring-app:latest",
+            "ports": {
+              "8080": "HTTP"
             }
           }
+        }' \
+        --public-endpoint '{
+          "containerName": "spring",
+          "containerPort": 8080,
+          "healthCheck": {
+            "path": "/actuator/health",
+            "intervalSeconds": 10,
+            "timeoutSeconds": 5,
+            "unhealthyThreshold": 2,
+            "healthyThreshold": 2
+          }
+        }'
