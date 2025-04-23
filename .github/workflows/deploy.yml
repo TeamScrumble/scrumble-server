@@ -60,6 +60,12 @@ jobs:
           --cache-from scrumble-server:latest \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           -t scrumble-server:latest .
+
+    - name: Install Lightsail Control Plugin
+      run: |
+        sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+        sudo chmod +x /usr/local/bin/lightsailctl
+
     
     - name: Push to Lightsail
       env:
@@ -98,7 +104,7 @@ jobs:
                 \"DB_USERNAME\": \"${{ secrets.DB_USERNAME }}\",
                 \"DB_PASSWORD\": \"${{ secrets.DB_PASSWORD }}\",
                 \"REDIS_HOST\": \"${{ secrets.REDIS_HOST }}\",
-                \"REDIS_PASSWORD\": \"${{ secrets.REDIS_PASSWORD }}\"
+                \"REDIS_PORT\": \"${{ secrets.REDIS_PORT }}\"
               }
             }
           }"

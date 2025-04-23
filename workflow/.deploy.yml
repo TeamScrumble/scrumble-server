@@ -1,0 +1,13 @@
+- name: Build Docker image
+  run: |
+    docker build \
+      --cache-from scrumble-server:latest \
+      --build-arg BUILDKIT_INLINE_CACHE=1 \
+      -t scrumble-server:latest .
+
+- name: Install Lightsail Control Plugin
+  run: |
+    sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+    sudo chmod +x /usr/local/bin/lightsailctl
+
+- name: Push to Lightsail 
