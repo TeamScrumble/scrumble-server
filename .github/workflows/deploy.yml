@@ -113,7 +113,6 @@ jobs:
         aws lightsail create-container-service-deployment \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
         --region ap-northeast-2 \
-        --deployment-version $(date +%s) \
         --cli-input-json file://deployment.json
 
     # - name: 배포 상태 확인
