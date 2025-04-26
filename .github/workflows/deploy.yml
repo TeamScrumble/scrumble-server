@@ -55,24 +55,7 @@ jobs:
 
     - name: AWS Lightsail 컨테이너에 배포
       run: |
-        aws lightsail create-container-service-deployment \
+        aws lightsail push-container-image \
+        --region ap-northeast-2a \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
-        --containers '{
-          "spring": {
-            "image": "spring-app:latest",
-            "ports": {
-              "8080": "HTTP"
-            }
-          }
-        }' \
-        --public-endpoint '{
-          "containerName": "spring",
-          "containerPort": 8080,
-          "healthCheck": {
-            "path": "/actuator/health",
-            "intervalSeconds": 10,
-            "timeoutSeconds": 5,
-            "unhealthyThreshold": 2,
-            "healthyThreshold": 2
-          }
-        }'
+        --image "spring-app:latest"
