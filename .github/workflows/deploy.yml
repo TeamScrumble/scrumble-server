@@ -56,6 +56,7 @@ jobs:
     - name: AWS Lightsail 컨테이너에 배포
       run: |
         aws lightsail push-container-image \
+        --label ${{ secrets.BACKEND_SERVICE_NAME }} \
         --region ap-northeast-2a \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
         --image "spring-app:latest"
