@@ -37,17 +37,17 @@ jobs:
     
     steps:
     - name: 소스 코드 체크아웃
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
     
     - name: JDK 23 설정
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v2
       with:
         java-version: '23'
         distribution: 'temurin'
         cache: gradle
     
     - name: Gradle 캐시 설정
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       with:
         path: |
           ~/.gradle/caches
@@ -63,7 +63,7 @@ jobs:
       run: ./gradlew bootJar --parallel --build-cache
     
     - name: JAR 파일 업로드
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: app-jar
         path: build/libs/*.jar
@@ -78,10 +78,10 @@ jobs:
     
     steps:
     - name: 소스 코드 체크아웃
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
     
     - name: JAR 파일 다운로드
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: app-jar
         path: build/libs/
@@ -94,7 +94,7 @@ jobs:
         docker build -t spring-app:latest .
 
     - name: AWS 자격 증명 설정
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -121,7 +121,6 @@ jobs:
         # 최신 이미지 이름 추출
         LATEST_IMAGE=$(jq -r '.containerImages[0].image' image_info.json)
         echo "Latest image: $LATEST_IMAGE"
-        echo "IMAGE_PUSHED=true" >> $GITHUB_ENV
 
   deploy:
     runs-on: build
@@ -133,7 +132,7 @@ jobs:
     
     steps:
     - name: AWS 자격 증명 설정
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
