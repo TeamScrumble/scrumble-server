@@ -1,53 +1,33 @@
 name: Java 애플리케이션 빌드 및 AWS Lightsail 배포
 
 on:
-  pull_request_review:
-    types: [submitted]
-    branches:
-      - master
-  pull_request:
-    types: [closed]
-    branches:
-      - master
   workflow_dispatch:
     inputs:
-      deploy_type:
-        description: '배포 유형 선택'
-        required: true
-        type: choice
-        options:
-          - manual-deploy
-          - total-deploy
+        deploy_target:
+          description: 'Deploy server'
+          required: true
+          type: choice
+          options:
+          - server
+  
 
 jobs:
-  check-approval:
+  build-and-deploy:
     runs-on: build
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
-    steps:
-      - name: PR 승인 확인
-        run: echo "Pull Request가 승인되었습니다. 빌드를 시작합니다."
-
-  build:
-    runs-on: build
-    # PR 승인 또는 머지 또는 total-deploy 옵션일 때 실행
-    if: |
-      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || 
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || 
-      github.event.inputs.deploy_type == 'total-deploy'
     
     steps:
     - name: 소스 코드 체크아웃
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     
     - name: JDK 23 설정
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: '23'
         distribution: 'temurin'
         cache: gradle
     
     - name: Gradle 캐시 설정
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.gradle/caches
@@ -62,39 +42,12 @@ jobs:
     - name: Gradle로 빌드
       run: ./gradlew bootJar --parallel --build-cache
     
-    - name: JAR 파일 업로드
-      uses: actions/upload-artifact@v2
-      with:
-        name: app-jar
-        path: build/libs/*.jar
-        retention-days: 1
-
-  build-and-push-image:
-    runs-on: build
-    needs: build
-    # 빌드 성공 후 실행
-    if: |
-      needs.build.result == 'success'
-    
-    steps:
-    - name: 소스 코드 체크아웃
-      uses: actions/checkout@v2
-    
-    - name: JAR 파일 다운로드
-      uses: actions/download-artifact@v2
-      with:
-        name: app-jar
-        path: build/libs/
-    
-    - name: JAR 파일 확인
-      run: ls -la build/libs/
-    
     - name: Docker 이미지 빌드
       run: |
         docker build -t spring-app:latest .
 
     - name: AWS 자격 증명 설정
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -105,58 +58,31 @@ jobs:
         aws lightsail push-container-image \
         --region ap-northeast-2 \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
-        --label app \
+        --label ${{ secrets.BACKEND_SERVICE_NAME }} \
         --image "spring-app:latest"
       id: push-image
 
     - name: 이미지 정보 출력
-      run: |
-        echo "Pushed image to Lightsail container service"
-        # 이미지 정보를 파일로 저장
-        aws lightsail get-container-images \
-        --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
-        --region ap-northeast-2 \
-        --output json > image_info.json
-        
-        # 최신 이미지 이름 추출
-        LATEST_IMAGE=$(jq -r '.containerImages[0].image' image_info.json)
-        echo "Latest image: $LATEST_IMAGE"
+      run: echo "Pushed image digest is ${{ steps.push-image.outputs.imageDigest }}"
 
-  deploy:
-    runs-on: build
-    # manual-deploy 또는 total-deploy 선택 시 실행, build-and-push-image에 의존성 없음
-    if: |
-      github.event.inputs.deploy_type == 'manual-deploy' || 
-      (github.event.inputs.deploy_type == 'total-deploy' && needs.build-and-push-image.result == 'success')
-    needs: [build-and-push-image]
-    
-    steps:
-    - name: AWS 자격 증명 설정
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
-    
-    - name: 최신 이미지 정보 가져오기
+    - name: 현재 배포 상태 가져오기
       run: |
-        # Lightsail에서 최신 이미지 정보 가져오기
-        aws lightsail get-container-images \
+        aws lightsail get-container-services \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
-        --region ap-northeast-2 \
-        --output json > image_info.json
-        
-        # 최신 이미지 이름 추출
-        LATEST_IMAGE=$(jq -r '.containerImages[0].image' image_info.json)
-        echo "LATEST_IMAGE=$LATEST_IMAGE" >> $GITHUB_ENV
-        echo "Deploying image: $LATEST_IMAGE"
+        --region ap-northeast-2 > service_info.json
+        cat service_info.json
+
+    - name: 현재 배포 JSON 출력
+      run: |
+        CONTAINER_IMAGE=$(aws lightsail get-container-images --service-name ${{ secrets.BACKEND_SERVICE_NAME }} --region ap-northeast-2 --query 'containerImages[0].image' --output text)
+        echo "Latest container image: $CONTAINER_IMAGE"
         
         # 배포 JSON 준비
         cat > deployment.json << EOF
         {
           "containers": {
             "app": {
-              "image": "$LATEST_IMAGE",
+              "image": "$CONTAINER_IMAGE",
               "ports": {
                 "8080": "HTTP"
               },
@@ -210,11 +136,8 @@ jobs:
 
     - name: 배포 정보 출력
       run: |
-        SERVICE_URL=$(aws lightsail get-container-services \
+        aws lightsail get-container-services \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
         --region ap-northeast-2 \
         --query 'containerServices[0].url' \
-        --output text)
-        
-        echo "서비스 URL: $SERVICE_URL"
-        echo "배포가 성공적으로 완료되었습니다."
+        --output text
