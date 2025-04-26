@@ -96,9 +96,9 @@ jobs:
             "containerPort": 8080,
             "healthCheck": {
               "healthyThreshold": 2,
-              "unhealthyThreshold": 2,
-              "timeoutSeconds": 5,
-              "intervalSeconds": 10,
+              "unhealthyThreshold": 5,
+              "timeoutSeconds": 10,
+              "intervalSeconds": 35,
               "path": "/actuator/health",
               "successCodes": "200-299"
             }
