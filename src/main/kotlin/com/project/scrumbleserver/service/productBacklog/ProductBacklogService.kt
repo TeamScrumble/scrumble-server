@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.service.productBacklog
 
+import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklog
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.global.excception.BusinessException
@@ -28,4 +29,16 @@ class ProductBacklogService(
         return productBacklog.rowid
     }
 
+    fun findAll(projectRowid: Long): List<ApiGetAllProductBacklog.Response> {
+        val productBacklogList = productBacklogRepository.findAllByProjectRowid(projectRowid)
+
+        return productBacklogList.map {
+            ApiGetAllProductBacklog.Response(
+                productBacklogRowid = it.rowid,
+                title = it.title,
+                description = it.description,
+                regDate = it.regDate
+            )
+        }
+    }
 }
