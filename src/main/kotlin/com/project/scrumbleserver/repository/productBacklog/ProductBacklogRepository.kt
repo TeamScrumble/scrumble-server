@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProductBacklogRepository : JpaRepository<ProductBacklog, Long> {
+    fun findAllByProjectRowid(productRowid: Long): List<ProductBacklog>
 }
