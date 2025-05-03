@@ -19,9 +19,9 @@ class ApiControllerAdvice {
     )
 
     @ExceptionHandler(BusinessException::class)
-    fun exceptionHandler(e: BusinessException): Any {
+    fun exceptionHandler(e: BusinessException): ResponseEntity<ApiResponse<ErrorResponse>> {
         val errorResponse = ApiResponse.of(ErrorResponse(e.message), e.status)
-        logger.info(e.message)
+        logger.warn(e.message)
         return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, e.status)
     }
 
