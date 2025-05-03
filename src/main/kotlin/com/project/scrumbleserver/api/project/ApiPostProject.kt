@@ -8,6 +8,6 @@ object ApiPostProject {
     )
 
     data class Response(
-        val rowid: Long
+        val projectRowid: Long
     )
 }
