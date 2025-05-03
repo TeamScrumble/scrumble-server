@@ -1,6 +1,6 @@
 package com.project.scrumbleserver.controller.project
 
-import com.project.scrumbleserver.api.project.ApiGetAllPost
+import com.project.scrumbleserver.api.project.ApiGetAllProject
 import com.project.scrumbleserver.api.project.ApiPostProject
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.service.project.ProjectService
@@ -18,23 +18,13 @@ class ProjectController(
     fun add(
         @RequestBody request: ApiPostProject.Request
     ): ApiResponse<ApiPostProject.Response> {
-        val rowid = projectService.insert(request.title)
-        val response = ApiPostProject.Response(rowid)
-
+        val response = projectService.insert(request)
         return ApiResponse.of(response)
     }
 
-    @GetMapping(ApiGetAllPost.PATH)
-    fun getAll(): ApiResponse<List<ApiGetAllPost.Response>> {
-        val projects = projectService.findAll()
-        val response = projects.map {
-            ApiGetAllPost.Response(
-                rowid = it.rowid,
-                title = it.title,
-                regDate = it.regDate
-            )
-        }
-
+    @GetMapping(ApiGetAllProject.PATH)
+    fun getAll(): ApiResponse<ApiGetAllProject.Response> {
+        val response = projectService.findAll()
         return ApiResponse.of(response)
     }
 }
