@@ -12,7 +12,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 
-@Table(name = "product_backlog")
+@Entity(name = "product_backlog")
 class ProductBacklog(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
