@@ -17,17 +17,17 @@ jobs:
     if: ${{ inputs.deploy_target == 'manual-deploy' || inputs.deploy_target == 'total-deploy' }}
     steps:
     - name: 소스 코드 체크아웃
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: JDK 23 설정
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '23'
         distribution: 'temurin'
         cache: gradle
 
     - name: Gradle 캐시 설정
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches
@@ -43,7 +43,7 @@ jobs:
       run: ./gradlew bootJar --parallel --build-cache
 
     - name: 빌드 결과물 업로드
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: app-jar
         path: build/libs/*.jar
@@ -53,10 +53,10 @@ jobs:
     needs: gradle-build
     steps:
     - name: 소스 코드 체크아웃
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 빌드 결과물 다운로드
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: app-jar
         path: build/libs
@@ -68,7 +68,7 @@ jobs:
       run: docker save spring-app:latest -o spring-app.tar
 
     - name: 도커 이미지 업로드
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: spring-app-image
         path: spring-app.tar
@@ -84,7 +84,7 @@ jobs:
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
     steps:
     - name: 도커 이미지 다운로드
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: spring-app-image
         path: .
