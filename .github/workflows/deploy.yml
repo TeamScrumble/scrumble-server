@@ -12,7 +12,7 @@ on:
         - total-deploy
 
 jobs:
-  build-and-deploy:
+  gradle-build:
     runs-on: build
     if: ${{ inputs.deploy_target == 'manual-deploy' || inputs.deploy_target == 'total-deploy' }}
     steps:
@@ -42,8 +42,55 @@ jobs:
     - name: Gradle로 빌드
       run: ./gradlew bootJar --parallel --build-cache
 
+    - name: 빌드 결과물 업로드
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-jar
+        path: build/libs/*.jar
+
+  docker-build:
+    runs-on: build
+    needs: gradle-build
+    steps:
+    - name: 소스 코드 체크아웃
+      uses: actions/checkout@v3
+
+    - name: 빌드 결과물 다운로드
+      uses: actions/download-artifact@v3
+      with:
+        name: app-jar
+        path: build/libs
+
     - name: Docker 이미지 빌드
       run: docker build -t spring-app:latest .
+
+    - name: 도커 이미지 아티팩트로 저장
+      run: docker save spring-app:latest -o spring-app.tar
+
+    - name: 도커 이미지 업로드
+      uses: actions/upload-artifact@v3
+      with:
+        name: spring-app-image
+        path: spring-app.tar
+
+  docker-deploy:
+    runs-on: build
+    needs: docker-build
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+    steps:
+    - name: 도커 이미지 다운로드
+      uses: actions/download-artifact@v3
+      with:
+        name: spring-app-image
+        path: .
+
+    - name: 도커 이미지 로드
+      run: docker load -i spring-app.tar
 
     - name: 기존 컨테이너 중지 및 삭제 (있을 경우)
       run: |
@@ -51,12 +98,6 @@ jobs:
         docker rm spring-app || true
 
     - name: 새 컨테이너 실행
-      env:
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_URL: ${{ secrets.DB_URL }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        REDIS_HOST: ${{ secrets.REDIS_HOST }}
-        REDIS_PORT: ${{ secrets.REDIS_PORT }}
       run: |
         docker run -d \
           --name spring-app \
