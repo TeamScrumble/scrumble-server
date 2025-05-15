@@ -14,7 +14,7 @@ on:
 jobs:
   gradle-build:
     runs-on: build
-    if: ${{ inputs.deploy_target == 'manual-deploy' || inputs.deploy_target == 'total-deploy' }}
+    if: ${{ inputs.deploy_target == 'total-deploy' || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
     steps:
     - name: 소스 코드 체크아웃
       uses: actions/checkout@v4
@@ -51,6 +51,7 @@ jobs:
   docker-build:
     runs-on: build
     needs: gradle-build
+    if: ${{ inputs.deploy_target == 'total-deploy' || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
     steps:
     - name: 소스 코드 체크아웃
       uses: actions/checkout@v4
@@ -75,13 +76,13 @@ jobs:
 
   docker-deploy:
     runs-on: build
-    needs: docker-build
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_URL: ${{ secrets.DB_URL }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
+    if: ${{ inputs.deploy_target == 'total-deploy' || inputs.deploy_target == 'manual-deploy' }}
     steps:
     - name: 도커 이미지 다운로드
       uses: actions/download-artifact@v4
