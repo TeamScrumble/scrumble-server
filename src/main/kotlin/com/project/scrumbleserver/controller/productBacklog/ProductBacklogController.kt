@@ -2,10 +2,13 @@ package com.project.scrumbleserver.controller.productBacklog
 
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklog
+import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
+import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogResponse
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.service.productBacklog.ProductBacklogService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,11 +26,11 @@ class ProductBacklogController(
         description = "요청 정보를 기반으로 새 프로덕트 백로그를 생성합니다."
     )
     fun add(
-        @RequestBody
-        request: ApiPostProductBacklog.Request
-    ): ApiResponse<ApiPostProductBacklog.Response> {
+        @RequestBody @Valid
+        request: ApiPostProductBacklogRequest
+    ): ApiResponse<ApiPostProductBacklogResponse> {
         val productBacklogRowid = productBacklogService.insert(request)
-        val response = ApiPostProductBacklog.Response(productBacklogRowid)
+        val response = ApiPostProductBacklogResponse(productBacklogRowid)
         return ApiResponse.of(response)
     }
 
