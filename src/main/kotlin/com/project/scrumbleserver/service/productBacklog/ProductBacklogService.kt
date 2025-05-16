@@ -38,6 +38,7 @@ class ProductBacklogService(
                 productBacklogRowid = it.rowid,
                 title = it.title,
                 description = it.description,
+                priority = it.priority,
                 regDate = it.regDate
             )
         }
