@@ -6,7 +6,8 @@ object ApiPostProductBacklog {
     data class Request(
         val projectRowid: Long,
         val title: String,
-        val description: String
+        val description: String,
+        val priority: ProductBacklogPriority,
     )
 
     data class Response(
