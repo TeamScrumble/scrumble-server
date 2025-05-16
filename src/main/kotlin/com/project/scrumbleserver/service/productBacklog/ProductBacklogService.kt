@@ -22,7 +22,8 @@ class ProductBacklogService(
             ProductBacklog(
                 project = project,
                 title = request.title,
-                description = request.description
+                description = request.description,
+                priority = request.priority,
             )
         )
 
