@@ -1,7 +1,8 @@
 package com.project.scrumbleserver.service.project
 
-import com.project.scrumbleserver.api.project.ApiGetAllProject
-import com.project.scrumbleserver.api.project.ApiPostProject
+import com.project.scrumbleserver.api.project.ApiGetAllProjectResponse
+import com.project.scrumbleserver.api.project.ApiPostProjectRequest
+import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import org.springframework.stereotype.Service
@@ -13,20 +14,24 @@ class ProjectService(
 ) {
     @Transactional
     fun insert(
-        request: ApiPostProject.Request
-    ): ApiPostProject.Response {
-        val project = Project(title = request.title)
+        request: ApiPostProjectRequest,
+    ): ApiPostProjectResponse {
+        val project = Project(
+            title = request.title,
+            description = request.description ?: ""
+        )
         projectRepository.save(project)
-        return ApiPostProject.Response(project.rowid)
+        return ApiPostProjectResponse(project.rowid)
     }
 
     @Transactional(readOnly = true)
-    fun findAll(): ApiGetAllProject.Response {
-        return ApiGetAllProject.Response(
+    fun findAll(): ApiGetAllProjectResponse {
+        return ApiGetAllProjectResponse(
             projectRepository.findAll().map {
-                ApiGetAllProject.Response.Project(
+                ApiGetAllProjectResponse.Project(
                     rowid = it.rowid,
                     title = it.title,
+                    description = it.description,
                     regDate = it.regDate
                 )
             }

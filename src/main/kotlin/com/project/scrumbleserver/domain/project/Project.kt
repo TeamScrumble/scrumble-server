@@ -14,5 +14,9 @@ class Project(
     @Column(name = "project_rowid")
     var rowid: Long = 0L,
 
+    @Column(nullable = false, length = 30)
     var title: String,
+
+    @Column(nullable = true, length = 150)
+    var description: String,
 ) : BaseEntity()
