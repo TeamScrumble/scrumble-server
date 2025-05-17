@@ -53,13 +53,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
 
-    - name: AWS Lightsail 컨테이너에 배포
+    - name: AWS Lightsail 컨테이너에 이미지 푸시
       run: |
         aws lightsail push-container-image \
-        --label ${{ secrets.BACKEND_SERVICE_NAME }} \
         --region ap-northeast-2 \
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
+        --label ${{ secrets.BACKEND_SERVICE_NAME }} \
         --image "spring-app:latest"
+      id: push-image
 
     - name: 이미지 정보 출력
       run: echo "Pushed image digest is ${{ steps.push-image.outputs.imageDigest }}"
@@ -95,9 +96,9 @@ jobs:
             "containerPort": 8080,
             "healthCheck": {
               "healthyThreshold": 2,
-              "unhealthyThreshold": 2,
-              "timeoutSeconds": 5,
-              "intervalSeconds": 10,
+              "unhealthyThreshold": 5,
+              "timeoutSeconds": 10,
+              "intervalSeconds": 35,
               "path": "/actuator/health",
               "successCodes": "200-299"
             }
@@ -113,3 +114,29 @@ jobs:
         --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
         --region ap-northeast-2 \
         --cli-input-json file://deployment.json
+
+    # - name: 배포 상태 확인
+    #   run: |
+    #     echo "배포 시작됨. 상태 확인 중..."
+    #     while true; do
+    #       STATUS=$(aws lightsail get-container-services --service-name ${{ secrets.BACKEND_SERVICE_NAME }} --region ap-northeast-2 --query 'containerServices[0].state' --output text)
+    #       echo "현재 상태: $STATUS"
+    #       if [ "$STATUS" = "READY" ]; then
+    #         echo "배포 완료!"
+    #         break
+    #       elif [ "$STATUS" = "DEPLOYING" ]; then
+    #         echo "배포 진행 중..."
+    #         sleep 30
+    #       else
+    #         echo "배포 상태 이상: $STATUS"
+    #         exit 1
+    #       fi
+    #     done
+
+    # - name: 배포 정보 출력
+    #   run: |
+    #     aws lightsail get-container-services \
+    #     --service-name ${{ secrets.BACKEND_SERVICE_NAME }} \
+    #     --region ap-northeast-2 \
+    #     --query 'containerServices[0].url' \
+    #     --output text
