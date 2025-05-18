@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.api.productBacklog
 
+import com.project.scrumbleserver.domain.productBacklog.ProductBacklogPriority
 import java.time.LocalDateTime
 
 object ApiGetAllProductBacklog {

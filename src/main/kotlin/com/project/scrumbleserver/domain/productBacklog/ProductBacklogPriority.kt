@@ -1,4 +1,4 @@
-package com.project.scrumbleserver.api.productBacklog
+package com.project.scrumbleserver.domain.productBacklog
 
 enum class ProductBacklogPriority {
     HIGH, MEDIUM, LOW, UNDEFINED;

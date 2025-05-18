@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.api.productBacklog
 
+import com.project.scrumbleserver.domain.productBacklog.ProductBacklogPriority
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
