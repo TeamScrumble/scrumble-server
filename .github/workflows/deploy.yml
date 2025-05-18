@@ -63,7 +63,10 @@ jobs:
         path: build/libs
 
     - name: Docker 이미지 빌드
-      run: docker build -t spring-app:latest .
+      run: docker build -t localhost:5000/spring-app:latest .
+
+    - name: 도커 이미지 푸시
+      run: docker push localhost:5000/spring-app:latest
 
     - name: 도커 이미지 아티팩트로 저장
       run: docker save spring-app:latest -o spring-app.tar
@@ -84,14 +87,8 @@ jobs:
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
     if: ${{ inputs.deploy_target == 'total-deploy' || inputs.deploy_target == 'manual-deploy' }}
     steps:
-    - name: 도커 이미지 다운로드
-      uses: actions/download-artifact@v4
-      with:
-        name: spring-app-image
-        path: .
-
-    - name: 도커 이미지 로드
-      run: docker load -i spring-app.tar
+    - name: 도커 이미지 가져오기
+      run: docker pull localhost:5000/spring-app:latest
 
     - name: 기존 컨테이너 중지 및 삭제 (있을 경우)
       run: |
@@ -110,4 +107,4 @@ jobs:
           -e DB_USERNAME="$DB_USERNAME" \
           -e REDIS_HOST="$REDIS_HOST" \
           -e REDIS_PORT="$REDIS_PORT" \
-          spring-app:latest
+          localhost:5000/spring-app:latest
