@@ -107,4 +107,5 @@ jobs:
           -e DB_USERNAME="$DB_USERNAME" \
           -e REDIS_HOST="$REDIS_HOST" \
           -e REDIS_PORT="$REDIS_PORT" \
+          -e REDIS_PASSWORD="$REDIS_PASSWORD" \
           localhost:5000/spring-app:latest
