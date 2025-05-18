@@ -21,14 +21,14 @@ class ApiControllerAdvice {
 
     @ExceptionHandler(BusinessException::class)
     fun exceptionHandler(e: BusinessException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse = ApiResponse.Companion.of(ErrorResponse(e.message), e.status)
+        val errorResponse = ApiResponse.of(ErrorResponse(e.message), e.status)
         logger.warn(e.message)
         return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, e.status)
     }
 
     @ExceptionHandler(ServerException::class)
     fun exceptionHandler(e: ServerException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse = ApiResponse.Companion.of(ErrorResponse(e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        val errorResponse = ApiResponse.of(ErrorResponse(e.message), HttpStatus.INTERNAL_SERVER_ERROR)
         logger.error(e.stackTraceToString())
         return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
     }
