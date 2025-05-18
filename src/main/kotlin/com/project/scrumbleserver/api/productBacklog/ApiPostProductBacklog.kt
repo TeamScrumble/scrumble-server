@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
-object ApiPostProductBacklog {
-    const val PATH = "/api/v1/product-backlog"
-}
+const val API_POST_PRODUCT_BACKLOG_PATH = "/api/v1/product-backlog"
 
 data class ApiPostProductBacklogRequest(
     @field:NotNull(message = "projectRowid는 필수입니다.")
