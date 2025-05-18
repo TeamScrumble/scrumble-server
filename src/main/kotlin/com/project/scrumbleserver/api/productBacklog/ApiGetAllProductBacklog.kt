@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.api.productBacklog
 
+import com.project.scrumbleserver.domain.productBacklog.ProductBacklogPriority
 import java.time.LocalDateTime
 
 object ApiGetAllProductBacklog {
@@ -13,6 +14,7 @@ object ApiGetAllProductBacklog {
         val productBacklogRowid: Long,
         val title: String,
         val description: String,
+        val priority: ProductBacklogPriority,
         val regDate: LocalDateTime
     )
 }
