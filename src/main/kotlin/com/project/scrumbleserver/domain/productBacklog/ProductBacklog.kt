@@ -1,6 +1,5 @@
 package com.project.scrumbleserver.domain.productBacklog
 
-import com.project.scrumbleserver.domain.productBacklog.ProductBacklogPriority
 import com.project.scrumbleserver.domain.BaseEntity
 import com.project.scrumbleserver.domain.project.Project
 import jakarta.persistence.Column
@@ -13,7 +12,6 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
 
 @Entity(name = "product_backlog")
 class ProductBacklog(
@@ -26,13 +24,13 @@ class ProductBacklog(
     @JoinColumn(name = "project_rowid", nullable = false)
     val project: Project,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     var title: String,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 300)
     var description: String = "",
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var priority: ProductBacklogPriority = ProductBacklogPriority.UNDEFINED
+    var priority: ProductBacklogPriority = ProductBacklogPriority.NONE
 ) : BaseEntity()
