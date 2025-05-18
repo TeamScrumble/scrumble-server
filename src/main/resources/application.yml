@@ -3,10 +3,10 @@ spring:
     name: scrumble-server
 
   datasource:
-    url: jdbc:mysql://localhost:3306/scrumble
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/scrumble}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver    
 
   jpa:
     hibernate:
