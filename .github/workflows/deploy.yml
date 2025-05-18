@@ -110,7 +110,7 @@ jobs:
           -e REDIS_PASSWORD="$REDIS_PASSWORD" \
           localhost:5000/spring-app:latest
 
-docker-deploy-total:
+  docker-deploy-total:
     runs-on: build
     needs: docker-build
     env:
