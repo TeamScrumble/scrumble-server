@@ -1,7 +1,6 @@
 package com.project.scrumbleserver.service.productBacklog
 
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklog
-import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.global.excception.BusinessException
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class ProductBacklogService(
     private val productBacklogRepository: ProductBacklogRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
 ) {
     fun insert(request: ApiPostProductBacklogRequest): Long {
         val project = projectRepository.findByIdOrNull(request.projectRowid)
