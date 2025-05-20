@@ -3,7 +3,7 @@ package com.project.scrumbleserver.api.project
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-const val ApiPostProjectPath = "/api/v1/project"
+const val API_POST_PROJECT_PATH = "/api/v1/project"
 
 data class ApiPostProjectRequest(
     @field:NotBlank(message = "프로젝트 title은 필수입니다.")

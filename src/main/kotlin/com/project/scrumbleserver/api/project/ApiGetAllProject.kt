@@ -2,7 +2,7 @@ package com.project.scrumbleserver.api.project
 
 import java.time.LocalDateTime
 
-const val ApiGetAllProjectPath = "/api/v1/projects"
+const val API_GET_ALL_PROJECT_PATH = "/api/v1/projects"
 
 data class ApiGetAllProjectResponse(
     val projects: List<Project>
