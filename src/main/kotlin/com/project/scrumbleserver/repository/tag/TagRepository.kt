@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
+    fun findAllByRowidIsIn(tagRowids: Set<Long>): List<Tag>
     fun findAllByProject(projectId: Project): List<Tag>
 }
