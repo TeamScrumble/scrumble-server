@@ -19,15 +19,14 @@ class TagService(
     fun insert(
         project: Project,
     ) {
-        BasicTag.entries.map { tag ->
-            tagRepository.save(
-                Tag(
-                    project = project,
-                    title = tag.title,
-                    color = tag.color
-                )
+        val tagList = BasicTag.entries.map { tag ->
+            Tag(
+                project = project,
+                title = tag.title,
+                color = tag.color
             )
         }
+        tagRepository.saveAll(tagList)
     }
 
     @Transactional(readOnly = true)
