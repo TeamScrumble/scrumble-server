@@ -7,7 +7,7 @@ import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.infra.storage.ImageUploader
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.global.transaction.Transaction
-import com.project.scrumbleserver.service.TagService
+import com.project.scrumbleserver.service.tag.TagService
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
