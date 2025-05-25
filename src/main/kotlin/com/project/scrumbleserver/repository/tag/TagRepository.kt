@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
+    fun findAllByProject(projectId: Project): List<Tag>
 }
