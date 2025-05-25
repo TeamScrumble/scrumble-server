@@ -85,6 +85,13 @@ class ProductBacklogService(
                         title = it.title,
                         description = it.description,
                         priority = it.priority,
+                        tags = it.tags.map { tag ->
+                            ApiGetAllProductBacklogResponse.ProductBacklogTag(
+                                tag.rowid,
+                                tag.tag.title,
+                                tag.tag.color
+                            )
+                        },
                         regDate = it.regDate
                     )
                 )
