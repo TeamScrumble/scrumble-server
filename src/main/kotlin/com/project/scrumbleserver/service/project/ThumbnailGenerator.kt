@@ -16,23 +16,29 @@ class ThumbnailGenerator {
 
         const val FONT_NAME = "Pretendard"
 
-        val COLOR_SET = setOf(
-            Triple(255, 209, 220), // #FFD1DC
-            Triple(255, 250, 205), // #FFFACD
-            Triple(209, 255, 242), // #D1FFF2
-            Triple(230, 230, 250), // #E6E6FA
-            Triple(214, 240, 255), // #D6F0FF
-            Triple(255, 229, 180), // #FFE5B4
-            Triple(232, 204, 255), // #E8CCFF
-            Triple(198, 241, 255), // #C6F1FF
-            Triple(250, 214, 214), // #FAD6D6
-            Triple(240, 255, 240), // #F0FFF0
-            Triple(212, 205, 216), // #D4CDD8
-            Triple(255, 194, 154), // #FFC29A
-            Triple(232, 218, 239), // #E8DAEF
-            Triple(229, 192, 192), // #E5C0C0
-            Triple(198, 222, 222), // #C6DEDE
-            Triple(231, 216, 201), // #E7D8C9
+        private data class Rgb(
+            val r: Int,
+            val g: Int,
+            val b: Int,
+        )
+
+        private val COLOR_SET = setOf(
+            Rgb(255, 209, 220), // #FFD1DC
+            Rgb(255, 250, 205), // #FFFACD
+            Rgb(209, 255, 242), // #D1FFF2
+            Rgb(230, 230, 250), // #E6E6FA
+            Rgb(214, 240, 255), // #D6F0FF
+            Rgb(255, 229, 180), // #FFE5B4
+            Rgb(232, 204, 255), // #E8CCFF
+            Rgb(198, 241, 255), // #C6F1FF
+            Rgb(250, 214, 214), // #FAD6D6
+            Rgb(240, 255, 240), // #F0FFF0
+            Rgb(212, 205, 216), // #D4CDD8
+            Rgb(255, 194, 154), // #FFC29A
+            Rgb(232, 218, 239), // #E8DAEF
+            Rgb(229, 192, 192), // #E5C0C0
+            Rgb(198, 222, 222), // #C6DEDE
+            Rgb(231, 216, 201), // #E7D8C9
         )
     }
 
@@ -41,7 +47,7 @@ class ThumbnailGenerator {
         val g2d = image.createGraphics()
 
         val backgroundColor = COLOR_SET.random()
-        g2d.color = Color(backgroundColor.first, backgroundColor.second, backgroundColor.third)
+        g2d.color = Color(backgroundColor.r, backgroundColor.g, backgroundColor.b)
         g2d.fillRect(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
