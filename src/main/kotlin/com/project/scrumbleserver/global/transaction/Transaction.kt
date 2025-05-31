@@ -9,6 +9,7 @@ class Transaction(
     private val transactionTemplate: TransactionTemplate,
 ) {
     operator fun <T> invoke(action: () -> T): T {
+        transactionTemplate.isReadOnly = false
         return transactionTemplate.execute {
             action()
         } ?: throw ServerException("transaction execute failed")
