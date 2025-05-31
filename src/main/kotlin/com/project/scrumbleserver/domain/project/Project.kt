@@ -19,4 +19,7 @@ class Project(
 
     @Column(nullable = true, length = 150)
     var description: String,
+
+    @Column(nullable = false, length = 1000)
+    var thumbnail: String
 ) : BaseEntity()

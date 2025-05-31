@@ -11,6 +11,7 @@ data class ApiGetAllProjectResponse(
         val rowid: Long,
         val title: String,
         val description: String,
+        val thumbnailUrl: String,
         val regDate: LocalDateTime,
     )
 }
