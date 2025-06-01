@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
-
     @Query("""
         SELECT t FROM tag t 
         JOIN FETCH t.project 
