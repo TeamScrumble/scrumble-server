@@ -5,7 +5,7 @@ import com.project.scrumbleserver.api.project.ApiPostProjectRequest
 import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.repository.project.ProjectRepository
-import com.project.scrumbleserver.service.TagService
+import com.project.scrumbleserver.service.tag.TagService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

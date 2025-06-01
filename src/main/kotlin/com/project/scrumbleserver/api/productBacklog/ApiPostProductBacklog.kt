@@ -19,7 +19,10 @@ data class ApiPostProductBacklogRequest(
     val description: String,
 
     @field:NotNull(message = "priority는 필수입니다.")
-    val priority: ProductBacklogPriority
+    val priority: ProductBacklogPriority,
+
+    @field:Size(max = 10, message = "최대 10개의 태그만 지정할 수 있습니다.")
+    val tags: Set<Long>,
 )
 
 data class ApiPostProductBacklogResponse(

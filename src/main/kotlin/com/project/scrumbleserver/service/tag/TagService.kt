@@ -1,4 +1,4 @@
-package com.project.scrumbleserver.service
+package com.project.scrumbleserver.service.tag
 
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.tag.BasicTag
