@@ -44,4 +44,9 @@ class ProductBacklogTagService(
             throw BusinessException("해당 프로젝트에 속하지 않은 태그가 포함되어 있습니다.")
         }
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByProductBacklogRowidList(productBacklogRowidList: Set<Long>): List<ProductBacklogTag> {
+        return productBacklogTagRepository.findAllByProductBacklogRowidInFetchJoin(productBacklogRowidList)
+    }
 }
