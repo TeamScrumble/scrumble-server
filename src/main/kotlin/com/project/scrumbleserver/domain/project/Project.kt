@@ -1,11 +1,7 @@
 package com.project.scrumbleserver.domain.project
 
 import com.project.scrumbleserver.domain.BaseEntity
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
 class Project(

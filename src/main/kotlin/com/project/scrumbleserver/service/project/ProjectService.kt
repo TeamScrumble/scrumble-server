@@ -7,6 +7,7 @@ import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.infra.storage.ImageUploader
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.global.transaction.Transaction
+import com.project.scrumbleserver.service.tag.TagService
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -16,6 +17,7 @@ class ProjectService(
     private val projectRepository: ProjectRepository,
     private val thumbnailGenerator: ThumbnailGenerator,
     private val imageUploader: ImageUploader,
+    private val tagService: TagService,
 ) {
     fun insert(
         thumbnail: MultipartFile?,
@@ -28,15 +30,20 @@ class ProjectService(
 
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
-        val project = Project(
-            title = request.title,
-            description = request.description ?: "",
-            thumbnail = thumbnailUrl
-        )
-        transaction {
-            projectRepository.save(project)
+        val projectRowid = transaction {
+            val project = projectRepository.save(Project(
+                title = request.title,
+                description = request.description ?: "",
+                thumbnail = thumbnailUrl
+            ))
+
+            tagService.saveBasicTags(project)
+
+            project.rowid
         }
-        return ApiPostProjectResponse(project.rowid)
+
+
+        return ApiPostProjectResponse(projectRowid)
     }
 
     fun findAll(): ApiGetAllProjectResponse = transaction.readOnly {

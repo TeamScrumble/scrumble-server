@@ -1,7 +1,9 @@
 package com.project.scrumbleserver.controller.productBacklog
 
+import com.project.scrumbleserver.api.productBacklog.API_GET_ALL_PRODUCT_BACKLOG_PATH
 import com.project.scrumbleserver.api.productBacklog.API_POST_PRODUCT_BACKLOG_PATH
-import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklog
+import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogRequest
+import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogResponse
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogResponse
 import com.project.scrumbleserver.global.api.ApiResponse
@@ -34,15 +36,15 @@ class ProductBacklogController(
         return ApiResponse.of(response)
     }
 
-    @GetMapping(ApiGetAllProductBacklog.PATH)
+    @GetMapping(API_GET_ALL_PRODUCT_BACKLOG_PATH)
     @Operation(
         summary = "전체 프로덕트 백로그 조회",
         description = "특정 프로젝트의 모든 백로그 목록을 반환합니다."
     )
     fun findAll(
         @RequestBody
-        request: ApiGetAllProductBacklog.Request
-    ): ApiResponse<List<ApiGetAllProductBacklog.Response>> {
+        request: ApiGetAllProductBacklogRequest
+    ): ApiResponse<List<ApiGetAllProductBacklogResponse>> {
         val productBacklogs = productBacklogService.findAll(request.projectRowid)
         return ApiResponse.of(productBacklogs)
     }
