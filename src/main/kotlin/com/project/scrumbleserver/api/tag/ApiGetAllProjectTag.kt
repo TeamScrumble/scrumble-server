@@ -1,7 +1,6 @@
 package com.project.scrumbleserver.api.tag
 
 import jakarta.validation.constraints.NotNull
-import java.time.LocalDateTime
 
 const val API_GET_ALL_PROJECT_TAG_PATH = "/api/v1/project/tags"
 
