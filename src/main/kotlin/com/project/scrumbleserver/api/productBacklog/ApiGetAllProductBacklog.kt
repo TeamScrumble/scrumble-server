@@ -12,11 +12,17 @@ data class ApiGetAllProductBacklogRequest(
 data class ApiGetAllProductBacklogResponse(
     val productBacklogs: List<ProductBacklog>
 ) {
+    data class ProductBacklogTag(
+        val productBacklogTagRowid: Long,
+        val title: String,
+        val color: String
+    )
     data class ProductBacklog(
         val productBacklogRowid: Long,
         val title: String,
         val description: String,
         val priority: ProductBacklogPriority,
+        val tags: List<ProductBacklogTag>,
         val regDate: LocalDateTime
     )
 }
