@@ -21,9 +21,11 @@ class ProductBacklogTagService(
         productBacklog: ProductBacklog,
         requestedTagIds: Set<Long>
     ) {
-        val tags = tagRepository.findAllById(requestedTagIds)
+        val tags = tagRepository.findAllByIdWithProject(requestedTagIds, project.rowid)
 
-        validateTags(tags, requestedTagIds, project.rowid)
+        if (tags.size != requestedTagIds.size) {
+            throw BusinessException("존재하지 않는 태그가 포함되어 있습니다.")
+        }
 
         val productBacklogTags = tags.map {
             ProductBacklogTag(
@@ -33,16 +35,6 @@ class ProductBacklogTagService(
         }
 
         productBacklogTagRepository.saveAll(productBacklogTags)
-    }
-
-    private fun validateTags(tags: List<Tag>, requestedTagIds: Set<Long>, projectRowid: Long) {
-        if (tags.size != requestedTagIds.size) {
-            throw BusinessException("존재하지 않는 태그가 포함되어 있습니다.")
-        }
-
-        if (tags.any { it.project.rowid != projectRowid }) {
-            throw BusinessException("해당 프로젝트에 속하지 않은 태그가 포함되어 있습니다.")
-        }
     }
 
     @Transactional(readOnly = true)
