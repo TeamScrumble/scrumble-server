@@ -35,8 +35,5 @@ class ProductBacklog(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var priority: ProductBacklogPriority = ProductBacklogPriority.NONE,
-
-    @OneToMany(mappedBy = "productBacklog", cascade = [CascadeType.ALL])
-    val tags: MutableList<ProductBacklogTag> = mutableListOf()
+    var priority: ProductBacklogPriority = ProductBacklogPriority.NONE
 ) : BaseEntity()
