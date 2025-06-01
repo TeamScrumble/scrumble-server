@@ -22,8 +22,5 @@ class Project(
     var title: String,
 
     @Column(nullable = true, length = 150)
-    var description: String,
-
-    @OneToMany(mappedBy = "project", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val tags: MutableList<Tag> = mutableListOf()
+    var description: String
 ) : BaseEntity()
