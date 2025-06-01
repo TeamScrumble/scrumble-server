@@ -3,6 +3,7 @@ package com.project.scrumbleserver.service.productBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogResponse
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
+import com.project.scrumbleserver.domain.tag.Tag
 import com.project.scrumbleserver.global.excception.BusinessException
 import com.project.scrumbleserver.repository.productBacklog.ProductBacklogRepository
 import com.project.scrumbleserver.repository.project.ProjectRepository
@@ -45,25 +46,34 @@ class ProductBacklogService(
     fun findAll(projectRowid: Long): List<ApiGetAllProductBacklogResponse> {
         val productBacklogList = productBacklogRepository.findAllByProjectRowid(projectRowid)
 
-        return productBacklogList.map {
+        val productBacklogsRowidList = productBacklogList.map { it.rowid }.toSet()
+        val productBacklogTags = productBacklogTagService.findAllByProductBacklogRowidList(productBacklogsRowidList)
+
+        val tagMap: Map<Long, List<Tag>> = productBacklogTags
+            .groupBy { it.productBacklog.rowid }
+            .mapValues { entry -> entry.value.map { it.tag } }
+
+        return productBacklogList.map { productBacklog ->
             ApiGetAllProductBacklogResponse(
                 listOf(
                     ApiGetAllProductBacklogResponse.ProductBacklog(
-                        productBacklogRowid = it.rowid,
-                        title = it.title,
-                        description = it.description,
-                        priority = it.priority,
-                        tags = it.tags.map { productBacklogTag ->
-                            ApiGetAllProductBacklogResponse.ProductBacklogTag(
-                                productBacklogTagRowid = productBacklogTag.rowid,
-                                title = productBacklogTag.tag.title,
-                                color = productBacklogTag.tag.color
-                            )
-                        },
-                        regDate = it.regDate
+                        productBacklogRowid = productBacklog.rowid,
+                        title = productBacklog.title,
+                        description = productBacklog.description,
+                        priority = productBacklog.priority,
+                        tags = tagMap[productBacklog.rowid].orEmpty()
+                            .map { tag ->
+                                ApiGetAllProductBacklogResponse.ProductBacklogTag(
+                                    productBacklogTagRowid = tag.rowid,
+                                    title = tag.title,
+                                    color = tag.color,
+                                )
+                            },
+                        regDate = productBacklog.regDate
                     )
                 )
             )
         }
     }
 }
+
