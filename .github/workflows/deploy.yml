@@ -127,6 +127,10 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+      AWS_S3_HOST: ${{ secrets.AWS_S3_HOST }}
+      AWS_S3_ID: ${{ secrets.AWS_S3_ID }}
+      AWS_S3_PASSWORD: ${{ secrets.AWS_S3_PASSWORD }}
     if: github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'total-deploy'
     steps:
     - name: 도커 이미지 가져오기
@@ -150,6 +154,9 @@ jobs:
           -e REDIS_HOST="$REDIS_HOST" \
           -e REDIS_PORT="$REDIS_PORT" \
           -e REDIS_PASSWORD="$REDIS_PASSWORD" \
+          -e AWS_S3_HOST="$AWS_S3_HOST" \
+          -e AWS_S3_ID="$AWS_S3_ID" \
+          -e AWS_S3_PASSWORD="$AWS_S3_PASSWORD" \
           localhost:5000/spring-app:latest          
 
           notify-discord-on-pr-and-approve:
@@ -176,4 +183,3 @@ jobs:
                     -X POST \
                     -d "{\"content\": \"$MESSAGE\"}" \
                     $DISCORD_WEBHOOK_URL
-                    
