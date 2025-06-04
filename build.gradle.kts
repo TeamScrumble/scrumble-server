@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-plugins {
+dplugins {
     id("org.jetbrains.kotlin.jvm") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.spring") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.1.10"
