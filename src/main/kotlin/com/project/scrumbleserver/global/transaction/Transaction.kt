@@ -1,6 +1,6 @@
 package com.project.scrumbleserver.global.transaction
 
-import com.project.scrumbleserver.global.excception.ServerException
+import com.project.scrumbleserver.global.exception.ServerException
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
 
