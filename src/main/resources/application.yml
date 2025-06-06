@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -41,3 +41,6 @@ oauth:
     redirect-uri: ${GOOGLE_REDIRECT_URI}
     scope: ${GOOGLE_SCOPE}
     client-secret: ${GOOGLE_CLIENT_SECRET}
+
+jwt:
+  secret: ${JWT_SECRET}

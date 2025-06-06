@@ -1,4 +1,4 @@
-package com.project.scrumbleserver.global.excception
+package com.project.scrumbleserver.global.exception
 
 import org.springframework.http.HttpStatus
 

@@ -1,4 +1,4 @@
-package com.project.scrumbleserver.global.excception
+package com.project.scrumbleserver.global.exception
 
 class ServerException(
     override val message: String = "unknown error occurred"

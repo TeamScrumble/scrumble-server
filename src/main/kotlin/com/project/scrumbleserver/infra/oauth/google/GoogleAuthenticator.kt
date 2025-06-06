@@ -1,8 +1,7 @@
 package com.project.scrumbleserver.infra.oauth.google
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.project.scrumbleserver.global.excception.BusinessException
-import com.project.scrumbleserver.global.excception.ServerException
+import com.project.scrumbleserver.global.exception.UnauthorizedException
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -55,10 +54,10 @@ class GoogleAuthenticator(
         )
 
         if (response.statusCode.isError) {
-            throw BusinessException("구글 인증 요청에 실패했습니다.")
+            throw UnauthorizedException("구글 인증 요청에 실패했습니다.")
         }
 
-        return response.body?.accessToken ?: throw ServerException("구글로 부터 사용자 인증 정보를 가져오는데 실패했습니다.")
+        return response.body?.accessToken ?: throw UnauthorizedException("구글로 부터 사용자 인증 정보를 가져오는데 실패했습니다.")
     }
 
     data class GoogleUserInfo(
@@ -71,7 +70,7 @@ class GoogleAuthenticator(
         val givenName: String,
         @JsonProperty("family_name")
         val familyName: String,
-        val picture: String
+        val picture: String,
     )
 
     fun callUserInfoApi(accessToken: String): String {
@@ -89,9 +88,9 @@ class GoogleAuthenticator(
         )
 
         if (response.statusCode.isError) {
-            throw BusinessException("구글 사용자 정보 요청에 실패했습니다.")
+            throw UnauthorizedException("구글 사용자 정보 요청에 실패했습니다.")
         }
 
-        return response.body?.email ?: throw ServerException("구글로 부터 사용자 정보를 가져오는데 실패했습니다.")
+        return response.body?.email ?: throw UnauthorizedException("구글로 부터 사용자 정보를 가져오는데 실패했습니다.")
     }
 }

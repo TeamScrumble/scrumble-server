@@ -1,6 +1,6 @@
 package com.project.scrumbleserver.infra.storage
 
-import com.project.scrumbleserver.global.excception.BusinessException
+import com.project.scrumbleserver.global.exception.BusinessException
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
