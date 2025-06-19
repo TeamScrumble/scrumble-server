@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-dplugins {
+plugins {
     id("org.jetbrains.kotlin.jvm") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.spring") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.1.10"
@@ -40,6 +40,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
+
+    implementation("software.amazon.awssdk:s3:2.28.29")
+    implementation("software.amazon.awssdk:auth:2.28.29")
 
     runtimeOnly("com.mysql:mysql-connector-j")
 

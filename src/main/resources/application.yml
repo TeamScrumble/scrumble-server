@@ -32,5 +32,12 @@ management:
     health:
       show-details: always
 
+aws:
+  s3:
+    endpoint: ${S3_HOST:https://s3.scrumble.kro.kr}
+    access-key: ${S3_ACCESS}
+    secret-key: ${S3_SECRET}
+    region: us-east-1
+
 server:
   port: 8080
