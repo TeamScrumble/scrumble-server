@@ -41,6 +41,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
 
+    implementation("software.amazon.awssdk:s3:2.28.29")
+    implementation("software.amazon.awssdk:auth:2.28.29")
+
     runtimeOnly("com.mysql:mysql-connector-j")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
