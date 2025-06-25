@@ -1,12 +1,14 @@
 package com.project.scrumbleserver.service.auth
 
+import com.project.scrumbleserver.api.auth.ApiPostMemberInfoRequest
 import com.project.scrumbleserver.domain.member.Member
-import com.project.scrumbleserver.domain.member.MemberRepository
+import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.infra.cache.CacheStorage
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
 import com.project.scrumbleserver.infra.oauth.google.GoogleAuthenticator
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -53,5 +55,16 @@ class AuthService(
         cacheStorage.put("${REFRESH_TOKEN_PREFIX}${refreshToken}", memberId.toString(), SEVEN_DAYS)
 
         return AuthToken(accessToken, refreshToken)
+    }
+
+    fun enterAdditionalInfo(request: ApiPostMemberInfoRequest, memberRowid: Long) = transaction {
+        val member = memberRepository.findByIdOrNull(memberRowid)
+            ?: throw BusinessException("존재하지 않는 회원입니다.")
+
+        member.also {
+            it.nickname = request.nickname
+            it.job = request.job
+            it.profileImageUrl = request.profileImageUrl
+        }
     }
 }
