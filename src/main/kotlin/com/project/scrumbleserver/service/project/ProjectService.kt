@@ -4,11 +4,9 @@ import com.project.scrumbleserver.api.project.ApiGetAllProjectResponse
 import com.project.scrumbleserver.api.project.ApiPostProjectRequest
 import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
-import com.project.scrumbleserver.domain.projectInviteLink.ProjectInviteLink
 import com.project.scrumbleserver.infra.storage.ImageUploader
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.global.transaction.Transaction
-import com.project.scrumbleserver.repository.projectInviteLink.ProjectInviteLinkRepository
 import com.project.scrumbleserver.service.tag.TagService
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
