@@ -27,6 +27,6 @@ class ProductBacklogTag(
     val productBacklog: ProductBacklog,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag", nullable = false)
+    @JoinColumn(name = "tag_rowid", nullable = false)
     val tag: Tag
 ) : BaseEntity()
