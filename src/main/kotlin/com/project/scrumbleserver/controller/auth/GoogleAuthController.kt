@@ -17,7 +17,7 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
 @RestController
-class GoogleLoginController(
+class GoogleAuthController(
     private val authService: AuthService,
     private val googleOauthProperties: GoogleOauthProperties,
 ) {
@@ -53,23 +53,15 @@ class GoogleLoginController(
     ): ResponseEntity<Unit> {
         val authToken = authService.login(code)
 
-        Cookie("access_token", authToken.accessToken).apply {
+        fun createCookie(name: String, value: String, maxAge: Int) = Cookie(name, value).apply {
             path = "/"
             isHttpOnly = true
             secure = true
-            maxAge = ONE_HOUR
-        }.also { cookie ->
-            httpResponse.addCookie(cookie)
+            this.maxAge = maxAge
         }
 
-        Cookie("refresh_token", authToken.refreshToken).apply {
-            path = "/"
-            isHttpOnly = true
-            secure = true
-            maxAge = SEVEN_DAYS
-        }.also { cookie ->
-            httpResponse.addCookie(cookie)
-        }
+        httpResponse.addCookie(createCookie("access_token", authToken.accessToken, ONE_HOUR))
+        httpResponse.addCookie(createCookie("refresh_token", authToken.refreshToken, SEVEN_DAYS))
 
         val redirectUri = URLDecoder.decode(state, StandardCharsets.UTF_8)
         return ResponseEntity.status(HttpStatus.FOUND)
