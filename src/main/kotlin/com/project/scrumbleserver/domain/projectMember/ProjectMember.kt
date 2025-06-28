@@ -33,6 +33,6 @@ class ProjectMember(
     val member: Member,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     var permission: ProductMemberPermission = ProductMemberPermission.CAN_VIEW
 ) : BaseEntity()

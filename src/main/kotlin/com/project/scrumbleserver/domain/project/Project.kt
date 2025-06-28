@@ -2,6 +2,7 @@ package com.project.scrumbleserver.domain.project
 
 import com.project.scrumbleserver.domain.BaseEntity
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 class Project(
@@ -17,5 +18,15 @@ class Project(
     var description: String,
 
     @Column(nullable = false, length = 1000)
-    var thumbnail: String
-) : BaseEntity()
+    var thumbnail: String,
+
+    @Column(nullable = true, length = 100)
+    var uuid: String = "",
+) : BaseEntity() {
+    @PrePersist
+    fun generateUuid() {
+        if (uuid.isBlank()) {
+            uuid = UUID.randomUUID().toString().substring(0, 20)
+        }
+    }
+}
