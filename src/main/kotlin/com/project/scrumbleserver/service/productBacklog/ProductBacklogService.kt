@@ -3,7 +3,7 @@ package com.project.scrumbleserver.service.productBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklog
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
-import com.project.scrumbleserver.global.excception.BusinessException
+import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.productBacklog.ProductBacklogRepository
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import org.springframework.data.repository.findByIdOrNull

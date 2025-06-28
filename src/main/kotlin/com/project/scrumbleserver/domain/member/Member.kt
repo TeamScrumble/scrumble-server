@@ -17,8 +17,11 @@ class Member(
     var email: String,
 
     @Column(nullable = false, length = 50)
-    var nickname: String,
+    var nickname: String = "",
 
     @Column(nullable = false, length = 30)
-    var job: String,
-)
+    var job: String = "",
+) {
+    val isInfoEmpty
+        get() = nickname.isEmpty() || job.isEmpty()
+}
