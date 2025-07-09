@@ -14,5 +14,9 @@ data class ApiResponse<T>(
         fun <T> of(status: HttpStatus = HttpStatus.OK): ApiResponse<String> {
             return ApiResponse(HttpStatus.OK, status.name)
         }
+
+        fun empty(): ApiResponse<String> {
+            return ApiResponse(HttpStatus.OK, "Api Call Success")
+        }
     }
 }
