@@ -32,16 +32,13 @@ class JwtTokenProvider(
     }
 
     fun decodeToken(token: String): Long {
-        val claims = try {
-            Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .body
-        } catch (e: Exception) {
-            throw UnauthorizedException("유효하지 않은 인증 토큰 입니다.")
-        }
-
-        return claims.subject.toLongOrNull() ?: throw UnauthorizedException("유효하지 않은 인증 토큰 입니다.")
+        return Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .body
+            .subject
+            .toLongOrNull()
+            ?: throw UnauthorizedException("유효하지 사용자 일련번호가 아닙니다.")
     }
 }

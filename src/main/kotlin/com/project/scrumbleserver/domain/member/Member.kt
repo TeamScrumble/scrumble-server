@@ -21,6 +21,9 @@ class Member(
 
     @Column(nullable = false, length = 30)
     var job: String = "",
+
+    @Column(name = "profile_image_url", nullable = false, length = 1000)
+    var profileImageUrl: String = "",
 ) {
     val isInfoEmpty
         get() = nickname.isEmpty() || job.isEmpty()
