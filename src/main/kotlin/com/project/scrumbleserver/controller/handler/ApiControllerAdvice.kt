@@ -1,8 +1,9 @@
 package com.project.scrumbleserver.controller.handler
 
 import com.project.scrumbleserver.global.api.ApiResponse
-import com.project.scrumbleserver.global.excception.BusinessException
-import com.project.scrumbleserver.global.excception.ServerException
+import com.project.scrumbleserver.global.api.ErrorResponse
+import com.project.scrumbleserver.global.exception.BusinessException
+import com.project.scrumbleserver.global.exception.ServerException
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,10 +15,6 @@ private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class ApiControllerAdvice {
-
-    data class ErrorResponse(
-        val message: String
-    )
 
     @ExceptionHandler(BusinessException::class)
     fun exceptionHandler(e: BusinessException): ResponseEntity<ApiResponse<ErrorResponse>> {
