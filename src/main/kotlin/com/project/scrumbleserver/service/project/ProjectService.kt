@@ -4,10 +4,13 @@ import com.project.scrumbleserver.api.project.ApiGetAllProjectResponse
 import com.project.scrumbleserver.api.project.ApiPostProjectRequest
 import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
-import com.project.scrumbleserver.infra.storage.ImageUploader
-import com.project.scrumbleserver.repository.project.ProjectRepository
+import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
+import com.project.scrumbleserver.infra.storage.ImageUploader
+import com.project.scrumbleserver.repository.member.MemberRepository
+import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.service.tag.TagService
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -15,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectService(
     private val transaction: Transaction,
     private val projectRepository: ProjectRepository,
+    private val memberRepository: MemberRepository,
     private val thumbnailGenerator: ThumbnailGenerator,
     private val imageUploader: ImageUploader,
     private val tagService: TagService,
@@ -22,6 +26,7 @@ class ProjectService(
     fun insert(
         thumbnail: MultipartFile?,
         request: ApiPostProjectRequest,
+        userRowid: Long,
     ): ApiPostProjectResponse {
         val thumbnailData = thumbnail
             ?.takeIf { !it.isEmpty }
@@ -31,11 +36,17 @@ class ProjectService(
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
         val projectRowid = transaction {
-            val project = projectRepository.save(Project(
-                title = request.title,
-                description = request.description ?: "",
-                thumbnail = thumbnailUrl
-            ))
+            val owner = memberRepository.findByIdOrNull(userRowid)
+                ?: throw BusinessException("존재하지 않는 사용자 입니다.")
+
+            val project = projectRepository.save(
+                Project(
+                    title = request.title,
+                    description = request.description ?: "",
+                    thumbnail = thumbnailUrl,
+                    owner = owner
+                )
+            )
 
             tagService.saveBasicTags(project)
 

@@ -6,6 +6,7 @@ import com.project.scrumbleserver.api.project.ApiGetAllProjectResponse
 import com.project.scrumbleserver.api.project.ApiPostProjectRequest
 import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.global.api.ApiResponse
+import com.project.scrumbleserver.security.RequestUserRowid
 import com.project.scrumbleserver.service.project.ProjectService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -30,8 +31,9 @@ class ProjectController(
     fun add(
         @RequestPart("thumbnail", required = false) thumbnail: MultipartFile?,
         @RequestPart("request") @Valid request: ApiPostProjectRequest,
+        @RequestUserRowid userRowid: Long,
     ): ApiResponse<ApiPostProjectResponse> {
-        val response = projectService.insert(thumbnail, request)
+        val response = projectService.insert(thumbnail, request, userRowid)
         return ApiResponse.of(response)
     }
 
