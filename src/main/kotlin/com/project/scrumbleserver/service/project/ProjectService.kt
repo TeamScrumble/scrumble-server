@@ -42,7 +42,6 @@ class ProjectService(
             project.rowid
         }
 
-
         return ApiPostProjectResponse(projectRowid)
     }
 
