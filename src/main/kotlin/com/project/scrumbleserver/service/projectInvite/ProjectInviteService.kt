@@ -1,9 +1,9 @@
 package com.project.scrumbleserver.service.projectInvite
 
-import com.project.scrumbleserver.domain.member.MemberRepository
 import com.project.scrumbleserver.domain.projectInvite.ProjectInvite
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
+import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.repository.projectInvite.ProjectInviteRepository
 import org.springframework.data.repository.findByIdOrNull
