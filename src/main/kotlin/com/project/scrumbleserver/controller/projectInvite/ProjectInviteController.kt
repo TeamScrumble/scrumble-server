@@ -6,6 +6,7 @@ import com.project.scrumbleserver.service.projectInvite.ProjectInviteService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
@@ -36,8 +37,7 @@ class ProjectInviteController(
         description = "초대 코드를 통해 프로젝트에 참여합니다.",
     )
     fun inviteAccept(
-        @RequestBody @Valid
-        @RequestPart("code") code: String,
+        @PathVariable code: String
     ): ApiResponse<ApiPostProjectInviteAcceptResponse> {
         val response = projectInviteService.inviteAccept(code)
         return ApiResponse.of(ApiPostProjectInviteAcceptResponse(response))
