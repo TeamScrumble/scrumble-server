@@ -4,17 +4,24 @@ import com.project.scrumbleserver.api.project.ApiGetAllProjectResponse
 import com.project.scrumbleserver.api.project.ApiPostProjectRequest
 import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
+import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.infra.storage.ImageUploader
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.global.transaction.Transaction
+import com.project.scrumbleserver.repository.member.MemberRepository
+import com.project.scrumbleserver.repository.projectMember.ProjectMemberRepository
 import com.project.scrumbleserver.service.tag.TagService
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
 @Service
 class ProjectService(
     private val transaction: Transaction,
+    private val memberRepository: MemberRepository,
     private val projectRepository: ProjectRepository,
+    private val projectMemberRepository: ProjectMemberRepository,
     private val thumbnailGenerator: ThumbnailGenerator,
     private val imageUploader: ImageUploader,
     private val tagService: TagService,
@@ -22,7 +29,8 @@ class ProjectService(
     fun insert(
         thumbnail: MultipartFile?,
         request: ApiPostProjectRequest,
-    ): ApiPostProjectResponse {
+        userRowid: Long
+    ): ApiPostProjectResponse = transaction {
         val thumbnailData = thumbnail
             ?.takeIf { !it.isEmpty }
             ?.bytes
@@ -30,19 +38,23 @@ class ProjectService(
 
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
-        val projectRowid = transaction {
-            val project = projectRepository.save(Project(
-                title = request.title,
-                description = request.description ?: "",
-                thumbnail = thumbnailUrl
-            ))
+        val member = memberRepository.findByIdOrNull(userRowid) ?: throw IllegalArgumentException("Member with rowid $userRowid not found")
 
-            tagService.saveBasicTags(project)
+        val project = projectRepository.save(Project(
+            title = request.title,
+            description = request.description ?: "",
+            thumbnail = thumbnailUrl
+        ))
 
-            project.rowid
-        }
+        tagService.saveBasicTags(project)
 
-        return ApiPostProjectResponse(projectRowid)
+        projectMemberRepository.save(ProjectMember(
+            project = project,
+            member = member,
+            permission = ProjectMemberPermission.OWNER
+        ))
+
+        ApiPostProjectResponse(project.rowid)
     }
 
     fun findAll(): ApiGetAllProjectResponse = transaction.readOnly {
