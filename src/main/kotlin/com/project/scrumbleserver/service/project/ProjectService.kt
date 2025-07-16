@@ -31,7 +31,7 @@ class ProjectService(
         thumbnail: MultipartFile?,
         request: ApiPostProjectRequest,
         userRowid: Long
-    ): ApiPostProjectResponse = transaction {
+    ): ApiPostProjectResponse {
         val thumbnailData = thumbnail
             ?.takeIf { !it.isEmpty }
             ?.bytes
@@ -39,23 +39,25 @@ class ProjectService(
 
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
-        val member = memberRepository.findByIdOrNull(userRowid) ?: throw BusinessException("Member with rowid $userRowid not found")
+        transaction {
+            val member = memberRepository.findByIdOrNull(userRowid) ?: throw BusinessException("Member with rowid $userRowid not found")
 
-        val project = projectRepository.save(Project(
-            title = request.title,
-            description = request.description ?: "",
-            thumbnail = thumbnailUrl
-        ))
+            val project = projectRepository.save(Project(
+                title = request.title,
+                description = request.description ?: "",
+                thumbnail = thumbnailUrl
+            ))
 
-        tagService.saveBasicTags(project)
+            tagService.saveBasicTags(project)
 
-        projectMemberRepository.save(ProjectMember(
-            project = project,
-            member = member,
-            permission = ProjectMemberPermission.OWNER
-        ))
+            projectMemberRepository.save(ProjectMember(
+                project = project,
+                member = member,
+                permission = ProjectMemberPermission.OWNER
+            ))
 
-        ApiPostProjectResponse(project.rowid)
+            ApiPostProjectResponse(project.rowid)
+        }
     }
 
     fun findAll(): ApiGetAllProjectResponse = transaction.readOnly {
