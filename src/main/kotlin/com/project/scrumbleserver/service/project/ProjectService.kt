@@ -39,7 +39,7 @@ class ProjectService(
 
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
-        transaction {
+        return transaction {
             val member = memberRepository.findByIdOrNull(userRowid) ?: throw BusinessException("Member with rowid $userRowid not found")
 
             val project = projectRepository.save(Project(
