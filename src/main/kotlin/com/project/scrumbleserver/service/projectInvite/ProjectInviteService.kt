@@ -45,20 +45,18 @@ class ProjectInviteService(
 
     fun inviteAccept(
         code: String
-    ): Long {
-        return transaction {
-            val projectInvite = projectInviteRepository.findByUuid(code)
-                ?: throw BusinessException("초대 코드를 찾을 수 없습니다.")
+    ): Long = transaction {
+        val projectInvite = projectInviteRepository.findByUuid(code)
+            ?: throw BusinessException("초대 코드를 찾을 수 없습니다.")
 
-            val projectMember = projectMemberRepository.save(
-                ProjectMember(
-                    project = projectInvite.project,
-                    member = projectInvite.member,
-                    permission = ProjectMemberPermission.CAN_VIEW
-                )
+        val projectMember = projectMemberRepository.save(
+            ProjectMember(
+                project = projectInvite.project,
+                member = projectInvite.member,
+                permission = ProjectMemberPermission.CAN_VIEW
             )
+        )
 
-            projectMember.rowid
-        }
+        projectMember.rowid
     }
 }
