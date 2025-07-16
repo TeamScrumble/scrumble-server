@@ -40,4 +40,10 @@ class ApiControllerAdvice {
             .badRequest()
             .body(ApiResponse.of(errorMessages, HttpStatus.BAD_REQUEST))
     }
+
+    @ExceptionHandler(Exception::class)
+    fun handleException(e: Exception): ResponseEntity<ApiResponse<ErrorResponse>> {
+        val errorResponse = ApiResponse.of(ErrorResponse("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
