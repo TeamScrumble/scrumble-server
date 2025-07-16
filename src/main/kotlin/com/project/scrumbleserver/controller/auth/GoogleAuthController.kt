@@ -4,6 +4,7 @@ import com.project.scrumbleserver.api.auth.API_GOOGLE_LOGIN_PATH
 import com.project.scrumbleserver.api.auth.API_GOOGLE_OAUTH_CALLBACK_PATH
 import com.project.scrumbleserver.infra.oauth.google.GoogleOauthProperties
 import com.project.scrumbleserver.service.auth.AuthService
+import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
@@ -26,6 +27,10 @@ class GoogleAuthController(
         private const val SEVEN_DAYS = 7 * 24 * 60 * 60
     }
 
+    @Operation(
+        summary = "구글 로그인 API",
+        description = "구글로 로그인 하는 API 입니다. 사용자  추가 정보가 입력되어 있지 않으면 USER_INFO_EMPTY를 발생시킵니다."
+    )
     @GetMapping(API_GOOGLE_LOGIN_PATH)
     fun googleLogin(
         @RequestParam state: String,
