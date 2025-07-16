@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectInviteRepository : JpaRepository<ProjectInvite, Long> {
+    fun findByUuid(uuid: String): ProjectInvite?
 }
