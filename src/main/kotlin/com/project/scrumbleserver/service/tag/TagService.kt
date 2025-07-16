@@ -4,7 +4,7 @@ import com.project.scrumbleserver.api.tag.ApiGetAllProjectTagResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.tag.BasicTag
 import com.project.scrumbleserver.domain.tag.Tag
-import com.project.scrumbleserver.global.excception.BusinessException
+import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.repository.tag.TagRepository
 import org.springframework.data.repository.findByIdOrNull

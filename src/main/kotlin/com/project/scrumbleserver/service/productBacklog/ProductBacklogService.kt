@@ -4,7 +4,7 @@ import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogResp
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.domain.tag.Tag
-import com.project.scrumbleserver.global.excception.BusinessException
+import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.productBacklog.ProductBacklogRepository
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.service.tag.ProductBacklogTagService

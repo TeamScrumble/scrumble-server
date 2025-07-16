@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
-const val API_POST_PROJECT_INVITE_PATH = "/api/v1/project/invite"
+const val API_POST_PROJECT_INVITE_PATH = "/api/v1/project-invite"
 
 data class ApiPostProjectInviteRequest(
     @field:NotBlank(message = "이메일은 필수입니다.")

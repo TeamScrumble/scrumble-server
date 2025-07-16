@@ -3,8 +3,7 @@ package com.project.scrumbleserver.service.tag
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.tag.ProductBacklogTag
-import com.project.scrumbleserver.domain.tag.Tag
-import com.project.scrumbleserver.global.excception.BusinessException
+import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.tag.ProductBacklogTagRepository
 import com.project.scrumbleserver.repository.tag.TagRepository
 import org.springframework.stereotype.Service
