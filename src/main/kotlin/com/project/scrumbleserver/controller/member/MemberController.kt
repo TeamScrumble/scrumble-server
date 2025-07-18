@@ -1,6 +1,7 @@
 package com.project.scrumbleserver.controller.member
 
 import com.project.scrumbleserver.api.member.API_POST_MEMBER_INFO
+import com.project.scrumbleserver.api.member.ApiGetMemberInfoResponse
 import com.project.scrumbleserver.api.member.ApiPostMemberInfoRequest
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.security.RequestUserRowid
@@ -27,5 +28,17 @@ class MemberController(
     ): ApiResponse<String> {
         memberService.enterAdditionalInfo(request, userRowid)
         return ApiResponse.empty()
+    }
+
+    @Operation(
+        summary = "멤버 정보 조회 API",
+        description = "요청에 포함된 쿠키로 부터 멤버 정보를 조회하는 API 입니다."
+    )
+    @PostMapping(API_POST_MEMBER_INFO)
+    fun findByCookie(
+        @RequestUserRowid userRowid: Long,
+    ): ApiResponse<ApiGetMemberInfoResponse> {
+        val response = memberService.findById(userRowid)
+        return ApiResponse.of(response)
     }
 }
