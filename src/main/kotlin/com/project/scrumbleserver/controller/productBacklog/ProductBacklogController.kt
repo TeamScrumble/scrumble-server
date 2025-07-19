@@ -10,6 +10,7 @@ import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssign
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogResponse
 import com.project.scrumbleserver.global.api.ApiResponse
+import com.project.scrumbleserver.security.RequestUserRowid
 import com.project.scrumbleserver.service.productBacklog.ProductBacklogService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -32,9 +33,10 @@ class ProductBacklogController(
     )
     fun add(
         @RequestBody @Valid
-        request: ApiPostProductBacklogRequest
+        request: ApiPostProductBacklogRequest,
+        @RequestUserRowid userRowid: Long
     ): ApiResponse<ApiPostProductBacklogResponse> {
-        val productBacklogRowid = productBacklogService.insert(request)
+        val productBacklogRowid = productBacklogService.insert(request, userRowid)
         val response = ApiPostProductBacklogResponse(productBacklogRowid)
         return ApiResponse.of(response)
     }

@@ -23,16 +23,23 @@ class ProductBacklogService(
     private val projectRepository: ProjectRepository,
     private val productBacklogTagService: ProductBacklogTagService,
     private val memberRepository: MemberRepository,
-    private val assigneeRepository: AssigneeRepository
+    private val assigneeRepository: AssigneeRepository,
 ) {
 
-    fun insert(request: ApiPostProductBacklogRequest): Long = transaction {
+    fun insert(
+        request: ApiPostProductBacklogRequest,
+        userRowid: Long,
+    ): Long = transaction {
         val project = projectRepository.findByIdOrNull(request.projectRowid)
             ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+
+        val creator = memberRepository.findByIdOrNull(userRowid)
+            ?: throw BusinessException("사용자를 찾을 수 없습니다.")
 
         val productBacklog = productBacklogRepository.save(
             ProductBacklog(
                 project = project,
+                creator = creator,
                 title = request.title,
                 description = request.description,
                 priority = request.priority,
@@ -64,7 +71,7 @@ class ProductBacklogService(
 
     private fun assignMembers(
         memberRowidSet: Set<Long>,
-        productBacklog: ProductBacklog
+        productBacklog: ProductBacklog,
     ) {
         val members = memberRepository.findAllByRowid(memberRowidSet.toList())
 
