@@ -73,7 +73,7 @@ class ProductBacklogService(
         memberRowidSet: Set<Long>,
         productBacklog: ProductBacklog,
     ) {
-        val members = memberRepository.findAllByRowid(memberRowidSet.toList())
+        val members = memberRepository.findAllByRowidIn(memberRowidSet.toList())
 
         if (members.size != memberRowidSet.size) {
             throw BusinessException("존재하지 않은 멤버가 포함되어 있습니다.")

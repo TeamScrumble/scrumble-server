@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 interface MemberRepository : JpaRepository<Member, Long> {
     fun findByEmail(email: String): Member?
 
-    fun findAllByRowid(rowids: List<Long>): List<Member>
+    fun findAllByRowidIn(rowids: List<Long>): List<Member>
 }
