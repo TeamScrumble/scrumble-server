@@ -1,6 +1,7 @@
 package com.project.scrumbleserver.service.productBacklog
 
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogResponse
+import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssignRequest
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.domain.assignee.Assignee
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
@@ -47,6 +48,18 @@ class ProductBacklogService(
         assignMembers(request.assignees, productBacklog)
 
         productBacklog.rowid
+    }
+
+    fun assign(request: ApiPostProductBacklogAssignRequest) = transaction {
+        val productBacklog = productBacklogRepository.findByIdOrNull(request.productBacklogRowid)
+            ?: throw BusinessException("프로덕트 백로그를 찾을 수 없습니다.")
+
+        val registeredAssignees = assigneeRepository.findAllByProductBacklog(productBacklog)
+        registeredAssignees.forEach { assignees ->
+            assignees.delete()
+        }
+
+        assignMembers(request.assignees, productBacklog)
     }
 
     private fun assignMembers(
