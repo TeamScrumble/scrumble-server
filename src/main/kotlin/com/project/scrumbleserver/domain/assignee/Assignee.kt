@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.domain.assignee
 
+import com.project.scrumbleserver.domain.BaseEntity
 import com.project.scrumbleserver.domain.member.Member
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import jakarta.persistence.Column
@@ -25,4 +26,4 @@ class Assignee(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_backlog_rowid", nullable = false)
     val productBacklog: ProductBacklog
-)
+) : BaseEntity()
