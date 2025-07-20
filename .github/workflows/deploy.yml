@@ -87,15 +87,6 @@ jobs:
     - name: Docker 로그아웃
       run: docker logout ${{ secrets.REGISTRY_HOST }}
 
-    - name: 도커 이미지 아티팩트로 저장
-      run: docker save spring-app:latest -o spring-app.tar
-
-    - name: 도커 이미지 업로드
-      uses: actions/upload-artifact@v4
-      with:
-        name: spring-app-image
-        path: spring-app.tar
-
   docker-deploy-manual:
     runs-on: deploy
     env:
