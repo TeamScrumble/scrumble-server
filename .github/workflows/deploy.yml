@@ -98,6 +98,11 @@ jobs:
       AWS_S3_ID: ${{ secrets.AWS_S3_ID }}
       AWS_S3_PASSWORD: ${{ secrets.AWS_S3_PASSWORD }}
       DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      GOOGLE_SCOPE: ${{ secrets.GOOGLE_SCOPE }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     if: github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'manual-deploy'
     steps:
     - name: 도커 이미지 가져오기
@@ -124,6 +129,11 @@ jobs:
           -e AWS_S3_HOST="$AWS_S3_HOST" \
           -e AWS_S3_ID="$AWS_S3_ID" \
           -e AWS_S3_PASSWORD="$AWS_S3_PASSWORD" \
+          -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+          -e GOOGLE_REDIRECT_URI="$GOOGLE_REDIRECT_URI" \
+          -e GOOGLE_SCOPE="$GOOGLE_SCOPE" \
+          -e GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
+          -e JWT_SECRET="$JWT_SECRET" \
           localhost:5000/spring-app:latest
 
   docker-deploy-total:
@@ -140,6 +150,11 @@ jobs:
       AWS_S3_ID: ${{ secrets.AWS_S3_ID }}
       AWS_S3_PASSWORD: ${{ secrets.AWS_S3_PASSWORD }}
       DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      GOOGLE_SCOPE: ${{ secrets.GOOGLE_SCOPE }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     if: github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'total-deploy'
     steps:
     - name: 도커 이미지 가져오기
@@ -166,6 +181,11 @@ jobs:
           -e AWS_S3_HOST="$AWS_S3_HOST" \
           -e AWS_S3_ID="$AWS_S3_ID" \
           -e AWS_S3_PASSWORD="$AWS_S3_PASSWORD" \
+          -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+          -e GOOGLE_REDIRECT_URI="$GOOGLE_REDIRECT_URI" \
+          -e GOOGLE_SCOPE="$GOOGLE_SCOPE" \
+          -e GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
+          -e JWT_SECRET="$JWT_SECRET" \
           localhost:5000/spring-app:latest          
 
   notify-discord-on-pr-and-approve:
