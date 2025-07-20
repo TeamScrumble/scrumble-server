@@ -76,13 +76,11 @@ jobs:
 
     - name: Docker 이미지 빌드
       run: |
-        docker build -t ${{ secrets.REGISTRY_HOST }}/spring-app:latest .
-        docker build -t ${{ secrets.REGISTRY_HOST }}/spring-app:${{ github.sha }} .
+        docker build --platform linux/arm64 -t ${{ secrets.REGISTRY_HOST }}/spring-app:latest .
 
     - name: 도커 이미지 푸시
       run: |
         docker push ${{ secrets.REGISTRY_HOST }}/spring-app:latest
-        docker push ${{ secrets.REGISTRY_HOST }}/spring-app:${{ github.sha }}
 
     - name: Docker 로그아웃
       run: docker logout ${{ secrets.REGISTRY_HOST }}
