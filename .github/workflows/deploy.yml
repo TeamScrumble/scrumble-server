@@ -107,7 +107,7 @@ jobs:
       run: |
         docker run -d \
           --name spring-app \
-          --network scrumble \
+          --network ${{ secrets.DOCKER_NETWORK }} \
           -p 9909:8080 \
           -e SPRING_PROFILES_ACTIVE=production \
           -e DB_PASSWORD="$DB_PASSWORD" \
@@ -145,7 +145,7 @@ jobs:
       run: |
         docker run -d \
           --name spring-app \
-          --network scrumble \
+          --network docker-workspace_scrumble \
           -p 9909:8080 \
           -e SPRING_PROFILES_ACTIVE=production \
           -e DB_PASSWORD="$DB_PASSWORD" \
