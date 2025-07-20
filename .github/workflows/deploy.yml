@@ -1,4 +1,4 @@
-name: Java 애플리케이션 빌드 및 빌드 서버 도커 배포
+name: Spring Boot 애플리케이션 빌드 및 빌드 서버 도커 배포
 
 on:
   workflow_dispatch:
@@ -10,11 +10,17 @@ on:
         options:
         - manual-deploy
         - total-deploy
+  pull_request:
+    types: [opened]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   gradle-build:
     runs-on: build
-    if: ${{ inputs.deploy_target == 'total-deploy' || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
+    if: 
+      ${{ inputs.deploy_target == 'total-deploy' || 
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
     steps:
     - name: 소스 코드 체크아웃
       uses: actions/checkout@v4
@@ -51,7 +57,9 @@ jobs:
   docker-build:
     runs-on: build
     needs: gradle-build
-    if: ${{ inputs.deploy_target == 'total-deploy' || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
+    if: 
+      ${{ inputs.deploy_target == 'total-deploy' || 
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
     steps:
     - name: 소스 코드 체크아웃
       uses: actions/checkout@v4
@@ -62,11 +70,22 @@ jobs:
         name: app-jar
         path: build/libs
 
+    - name: Docker Registry 로그인
+      run: |
+        echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_HOST }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+
     - name: Docker 이미지 빌드
-      run: docker build -t localhost:5000/spring-app:latest .
+      run: |
+        docker build -t ${{ secrets.REGISTRY_HOST }}/spring-app:latest .
+        docker build -t ${{ secrets.REGISTRY_HOST }}/spring-app:${{ github.sha }} .
 
     - name: 도커 이미지 푸시
-      run: docker push localhost:5000/spring-app:latest
+      run: |
+        docker push ${{ secrets.REGISTRY_HOST }}/spring-app:latest
+        docker push ${{ secrets.REGISTRY_HOST }}/spring-app:${{ github.sha }}
+
+    - name: Docker 로그아웃
+      run: docker logout ${{ secrets.REGISTRY_HOST }}
 
     - name: 도커 이미지 아티팩트로 저장
       run: docker save spring-app:latest -o spring-app.tar
@@ -78,14 +97,14 @@ jobs:
         path: spring-app.tar
 
   docker-deploy-manual:
-    runs-on: build
+    runs-on: deploy
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_URL: ${{ secrets.DB_URL }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
-    if: inputs.deploy_target == 'manual-deploy'
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'manual-deploy'
     steps:
     - name: 도커 이미지 가져오기
       run: docker pull localhost:5000/spring-app:latest
@@ -111,7 +130,7 @@ jobs:
           localhost:5000/spring-app:latest
 
   docker-deploy-total:
-    runs-on: build
+    runs-on: deploy
     needs: docker-build
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -119,7 +138,11 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
-    if: inputs.deploy_target == 'total-deploy'
+      REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+      AWS_S3_HOST: ${{ secrets.AWS_S3_HOST }}
+      AWS_S3_ID: ${{ secrets.AWS_S3_ID }}
+      AWS_S3_PASSWORD: ${{ secrets.AWS_S3_PASSWORD }}
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'total-deploy'
     steps:
     - name: 도커 이미지 가져오기
       run: docker pull localhost:5000/spring-app:latest
@@ -142,4 +165,32 @@ jobs:
           -e REDIS_HOST="$REDIS_HOST" \
           -e REDIS_PORT="$REDIS_PORT" \
           -e REDIS_PASSWORD="$REDIS_PASSWORD" \
+          -e AWS_S3_HOST="$AWS_S3_HOST" \
+          -e AWS_S3_ID="$AWS_S3_ID" \
+          -e AWS_S3_PASSWORD="$AWS_S3_PASSWORD" \
           localhost:5000/spring-app:latest          
+
+          notify-discord-on-pr-and-approve:
+            if: |
+              github.event_name == 'pull_request' ||
+              (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+            runs-on: ubuntu-latest
+            steps:
+              - name: 디스코드로 PR/승인 알림 전송
+                env:
+                  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+                  PR_TITLE: ${{ github.event.pull_request.title }}
+                  PR_BODY: ${{ github.event.pull_request.body }}
+                  PR_URL: ${{ github.event.pull_request.html_url }}
+                  REVIEW_STATE: ${{ github.event.review.state }}
+                  REVIEW_USER: ${{ github.event.review.user.login }}
+                run: |
+                  if [ "$GITHUB_EVENT_NAME" = "pull_request_review" ] && [ "$REVIEW_STATE" = "approved" ]; then
+                    MESSAGE="**Pull Request가 승인되었습니다!**\n제목: $PR_TITLE\n\n내용: $PR_BODY\n\n링크: $PR_URL\n승인자: $REVIEW_USER"
+                  else
+                    MESSAGE="**새 Pull Request가 열렸습니다!**\n제목: $PR_TITLE\n\n내용: $PR_BODY\n\n링크: $PR_URL"
+                  fi
+                  curl -H "Content-Type: application/json" \
+                    -X POST \
+                    -d "{\"content\": \"$MESSAGE\"}" \
+                    $DISCORD_WEBHOOK_URL
