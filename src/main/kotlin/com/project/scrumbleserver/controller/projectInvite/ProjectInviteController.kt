@@ -1,8 +1,11 @@
 package com.project.scrumbleserver.controller.projectInvite
 
 import com.project.scrumbleserver.api.projectInvite.*
+import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
 import com.project.scrumbleserver.global.api.ApiResponse
+import com.project.scrumbleserver.security.RequestUserRowid
 import com.project.scrumbleserver.service.projectInvite.ProjectInviteService
+import com.project.scrumbleserver.service.projectMember.ProjectMemberService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -15,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Tag(name = "Project", description = "프로젝트 초대 관련 API")
 class ProjectInviteController(
-    private val projectInviteService: ProjectInviteService
+    private val projectInviteService: ProjectInviteService,
+    private val projectMemberService: ProjectMemberService
 ) {
 
     @PostMapping(API_POST_PROJECT_INVITE_PATH)
@@ -24,9 +28,11 @@ class ProjectInviteController(
         description = "요청 정보를 기반으로 회원에게 초대 링크를 전달합니다.",
     )
     fun invite(
-        @RequestBody @Valid
-        request: ApiPostProjectInviteRequest,
+        @RequestBody @Valid request: ApiPostProjectInviteRequest,
+        @RequestUserRowid userRowid: Long,
     ): ApiResponse<ApiPostProjectInviteResponse> {
+        projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.CAN_EDIT)
+
         val response = projectInviteService.invite(request.projectRowid, request.email)
         return ApiResponse.of(ApiPostProjectInviteResponse(response))
     }
