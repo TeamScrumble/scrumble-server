@@ -26,17 +26,19 @@ class ProjectMemberService(
     }
 
     fun assertPermission(projectRowid: Long, memberRowid: Long, required: ProjectMemberPermission) {
-        val member = memberRepository.findByIdOrNull(memberRowid)
-            ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
+        transaction.readOnly {
+            val member = memberRepository.findByIdOrNull(memberRowid)
+                ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
 
-        val project = projectRepository.findByIdOrNull(projectRowid)
-            ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
+            val project = projectRepository.findByIdOrNull(projectRowid)
+                ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
 
-        val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
-            ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
+            val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
+                ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
 
-        if(!projectMember.permission.hasAtLeast(required)) {
-            throw BusinessException(INSUFFICIENT_PROJECT_PERMISSION_MSG)
+            if(!projectMember.permission.hasAtLeast(required)) {
+                throw BusinessException(INSUFFICIENT_PROJECT_PERMISSION_MSG)
+            }
         }
     }
 
