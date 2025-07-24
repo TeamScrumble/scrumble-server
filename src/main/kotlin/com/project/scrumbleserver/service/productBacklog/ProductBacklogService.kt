@@ -79,13 +79,14 @@ class ProductBacklogService(
             throw BusinessException("존재하지 않은 멤버가 포함되어 있습니다.")
         }
 
-        members.forEach { member ->
-            val assignee = Assignee(
+        val assignees = members.map { member ->
+            Assignee(
                 member = member,
                 productBacklog = productBacklog
             )
-            assigneeRepository.save(assignee)
         }
+
+        assigneeRepository.saveAll(assignees)
     }
 
     fun findAll(projectRowid: Long): List<ApiGetAllProductBacklogResponse> = transaction.readOnly {
