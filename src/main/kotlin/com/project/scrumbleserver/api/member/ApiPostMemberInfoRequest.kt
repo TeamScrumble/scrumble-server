@@ -1,9 +1,9 @@
-package com.project.scrumbleserver.api.auth
+package com.project.scrumbleserver.api.member
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-const val API_POST_MEMBER_INFO = "/api/v1/auth/info"
+const val API_POST_MEMBER_INFO = "/api/v1/member/info"
 
 data class ApiPostMemberInfoRequest(
     @field:NotBlank("nickname는 필수로 입력해 주세요.")
