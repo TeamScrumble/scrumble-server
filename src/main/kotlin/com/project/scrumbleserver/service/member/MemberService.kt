@@ -13,7 +13,7 @@ class MemberService(
     private val transaction: Transaction,
     private val memberRepository: MemberRepository,
 ) {
-    fun enterAdditionalInfo(
+    fun updateInfo(
         request: ApiPostMemberInfoRequest,
         memberRowid: Long,
     ) = transaction {

@@ -27,7 +27,7 @@ class MemberController(
         @RequestBody @Valid request: ApiPostMemberInfoRequest,
         @RequestUserRowid userRowid: Long,
     ): ApiResponse<String> {
-        memberService.enterAdditionalInfo(request, userRowid)
+        memberService.updateInfo(request, userRowid)
         return ApiResponse.empty()
     }
 
