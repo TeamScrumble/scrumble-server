@@ -9,9 +9,11 @@ import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssign
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssignResponse
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogResponse
+import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.security.RequestUserRowid
 import com.project.scrumbleserver.service.productBacklog.ProductBacklogService
+import com.project.scrumbleserver.service.projectMember.ProjectMemberService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "ProductBacklog", description = "프로덕트 백로그 관련 API")
 class ProductBacklogController(
     private val productBacklogService: ProductBacklogService,
+    private val projectMemberService: ProjectMemberService
 ) {
 
     @PostMapping(API_POST_PRODUCT_BACKLOG_PATH)
@@ -32,11 +35,12 @@ class ProductBacklogController(
         description = "요청 정보를 기반으로 새 프로덕트 백로그를 생성합니다."
     )
     fun add(
-        @RequestBody @Valid
-        request: ApiPostProductBacklogRequest,
-        @RequestUserRowid userRowid: Long
+        @RequestBody @Valid request: ApiPostProductBacklogRequest,
+        @RequestUserRowid userRowid: Long,
     ): ApiResponse<ApiPostProductBacklogResponse> {
-        val productBacklogRowid = productBacklogService.insert(request, userRowid)
+        projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.CAN_EDIT)
+
+        val productBacklogRowid = productBacklogService.insert(request)
         val response = ApiPostProductBacklogResponse(productBacklogRowid)
         return ApiResponse.of(response)
     }

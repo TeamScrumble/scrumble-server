@@ -31,7 +31,8 @@ class SecurityConfig {
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers("/**").permitAll()
+                it.requestMatchers("/api/v1/auth/google/login").permitAll()
+                    .anyRequest().authenticated()
             }
             .addFilterBefore(
                 SecurityFilter(jwtTokenProvider, objectMapper, memberRepository),

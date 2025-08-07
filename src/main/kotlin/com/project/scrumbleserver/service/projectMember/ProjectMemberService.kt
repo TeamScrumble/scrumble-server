@@ -23,6 +23,24 @@ class ProjectMemberService(
         private const val PROJECT_NOT_FOUND_MSG = "존재하지 않는 프로젝트입니다."
         private const val NOT_PROJECT_MEMBER_MSG = "프로젝트에 속한 회원이 아닙니다."
         private const val MUST_HAVE_AT_LEAST_ONE_OWNER_MSG = "프로젝트에 최소 한 명 이상의 OWNER 권한이 존재해야 합니다."
+        private const val INSUFFICIENT_PROJECT_PERMISSION_MSG = "해당 작업을 수행할 권한이 없습니다."
+    }
+
+    fun assertPermission(projectRowid: Long, memberRowid: Long, required: ProjectMemberPermission) {
+        transaction.readOnly {
+            val member = memberRepository.findByIdOrNull(memberRowid)
+                ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
+
+            val project = projectRepository.findByIdOrNull(projectRowid)
+                ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
+
+            val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
+                ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
+
+            if(!projectMember.permission.hasAtLeast(required)) {
+                throw BusinessException(INSUFFICIENT_PROJECT_PERMISSION_MSG)
+            }
+        }
     }
 
     fun findAllByProjectRowid(projectRowid: Long): ApiGetProjectMembersResponse = transaction.readOnly {

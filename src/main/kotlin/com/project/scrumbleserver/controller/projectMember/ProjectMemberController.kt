@@ -7,6 +7,7 @@ import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersRequest
 import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersResponse
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionRequest
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionResponse
+import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.security.RequestUserRowid
 import com.project.scrumbleserver.service.project.ProjectService
@@ -49,6 +50,8 @@ class ProjectMemberController(
         request: ApiPutProjectMemberPermissionRequest,
         @RequestUserRowid userRowid: Long
     ): ApiResponse<ApiPutProjectMemberPermissionResponse> {
+        projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.OWNER)
+
         val projectMemberRowid = projectMemberService.edit(request.projectRowid, request.memberRowid, request.permission, userRowid)
         val response = ApiPutProjectMemberPermissionResponse(projectMemberRowid)
         return ApiResponse.of(response)
