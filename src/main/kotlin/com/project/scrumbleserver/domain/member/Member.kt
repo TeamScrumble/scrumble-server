@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.domain.member
 
+import com.project.scrumbleserver.domain.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -24,7 +25,7 @@ class Member(
 
     @Column(name = "profile_image_url", nullable = false, length = 1000)
     var profileImageUrl: String = "",
-) {
+) : BaseEntity() {
     val isInfoEmpty
         get() = nickname.isEmpty() || job.isEmpty()
 }

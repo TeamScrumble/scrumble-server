@@ -23,6 +23,9 @@ data class ApiPostProductBacklogRequest(
 
     @field:Size(max = 10, message = "최대 10개의 태그만 지정할 수 있습니다.")
     val tags: Set<Long>,
+
+    @field:Size(max = 5, message = "담당자는 최대 5명까지 지정할 수 있습니다.")
+    val assignees: Set<Long> = emptySet()
 )
 
 data class ApiPostProductBacklogResponse(
