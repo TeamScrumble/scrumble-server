@@ -29,23 +29,25 @@ class GoogleAuthController(
 
     @Operation(
         summary = "구글 로그인 API",
-        description = "구글로 로그인 하는 API 입니다. 사용자  추가 정보가 입력되어 있지 않으면 USER_INFO_EMPTY를 발생시킵니다."
+        description = "구글로 로그인 하는 API 입니다. 사용자  추가 정보가 입력되어 있지 않으면 USER_INFO_EMPTY를 발생시킵니다.",
     )
     @GetMapping(API_GOOGLE_LOGIN_PATH)
     fun googleLogin(
         @RequestParam state: String,
     ): ResponseEntity<Unit> {
-        val googleAuthUrl = UriComponentsBuilder
-            .fromHttpUrl("https://accounts.google.com/o/oauth2/auth")
-            .queryParam("client_id", googleOauthProperties.clientId)
-            .queryParam("redirect_uri", googleOauthProperties.redirectUri)
-            .queryParam("response_type", "code")
-            .queryParam("scope", googleOauthProperties.scope)
-            .queryParam("state", state)
-            .build()
-            .toUriString()
+        val googleAuthUrl =
+            UriComponentsBuilder
+                .fromHttpUrl("https://accounts.google.com/o/oauth2/auth")
+                .queryParam("client_id", googleOauthProperties.clientId)
+                .queryParam("redirect_uri", googleOauthProperties.redirectUri)
+                .queryParam("response_type", "code")
+                .queryParam("scope", googleOauthProperties.scope)
+                .queryParam("state", state)
+                .build()
+                .toUriString()
 
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
             .location(URI.create(googleAuthUrl))
             .build()
     }
@@ -58,7 +60,11 @@ class GoogleAuthController(
     ): ResponseEntity<Unit> {
         val authToken = authService.login(code)
 
-        fun createCookie(name: String, value: String, maxAge: Int) = Cookie(name, value).apply {
+        fun createCookie(
+            name: String,
+            value: String,
+            maxAge: Int,
+        ) = Cookie(name, value).apply {
             path = "/"
             isHttpOnly = true
             secure = true
@@ -69,7 +75,8 @@ class GoogleAuthController(
         httpResponse.addCookie(createCookie("refresh_token", authToken.refreshToken, SEVEN_DAYS))
 
         val redirectUri = URLDecoder.decode(state, StandardCharsets.UTF_8)
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
             .location(URI.create(redirectUri))
             .build()
     }

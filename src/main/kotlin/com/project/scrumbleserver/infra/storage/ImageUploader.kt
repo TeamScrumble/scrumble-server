@@ -31,17 +31,19 @@ class ImageUploader(
     }
 
     fun upload(byteArray: ByteArray): String {
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.MULTIPART_FORM_DATA
-            set("Authorization", "Client-ID $CLIENT_ID")
-        }
+        val headers =
+            HttpHeaders().apply {
+                contentType = MediaType.MULTIPART_FORM_DATA
+                set("Authorization", "Client-ID $CLIENT_ID")
+            }
 
         val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
         body.add("image", Base64.getEncoder().encodeToString(byteArray))
 
         val request = HttpEntity(body, headers)
-        val response = restTemplate
-            .exchange(API_URL, HttpMethod.POST, request, Response::class.java)
+        val response =
+            restTemplate
+                .exchange(API_URL, HttpMethod.POST, request, Response::class.java)
 
         return response.body?.data?.link ?: throw BusinessException("이미지 업로드에 실패 했습니다.")
     }

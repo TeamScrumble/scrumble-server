@@ -10,7 +10,6 @@ import java.time.LocalDateTime
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity {
-
     @CreatedDate
     @Column(name = "reg_date", updatable = false)
     var regDate: LocalDateTime = LocalDateTime.now()

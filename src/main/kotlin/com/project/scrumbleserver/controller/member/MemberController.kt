@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class MemberController(
-    private val memberService: MemberService
+    private val memberService: MemberService,
 ) {
-
     @Operation(
         summary = "멤버 추가 정보 입력",
-        description = "멤버의 추가 정보를 입력하는 API 입니다."
+        description = "멤버의 추가 정보를 입력하는 API 입니다.",
     )
     @PostMapping(API_POST_MEMBER_INFO)
     fun enterAdditionalInfo(
@@ -34,7 +33,7 @@ class MemberController(
 
     @Operation(
         summary = "멤버 정보 조회 API",
-        description = "요청에 포함된 쿠키로 부터 멤버 정보를 조회하는 API 입니다."
+        description = "요청에 포함된 쿠키로 부터 멤버 정보를 조회하는 API 입니다.",
     )
     @GetMapping(API_GET_MEMBER_INFO)
     fun findByCookie(

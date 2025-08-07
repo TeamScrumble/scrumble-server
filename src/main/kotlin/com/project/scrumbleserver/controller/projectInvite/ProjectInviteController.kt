@@ -1,6 +1,10 @@
 package com.project.scrumbleserver.controller.projectInvite
 
-import com.project.scrumbleserver.api.projectInvite.*
+import com.project.scrumbleserver.api.projectInvite.API_POST_PROJECT_INVITE_ACCEPT_PATH
+import com.project.scrumbleserver.api.projectInvite.API_POST_PROJECT_INVITE_PATH
+import com.project.scrumbleserver.api.projectInvite.ApiPostProjectInviteAcceptResponse
+import com.project.scrumbleserver.api.projectInvite.ApiPostProjectInviteRequest
+import com.project.scrumbleserver.api.projectInvite.ApiPostProjectInviteResponse
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.security.RequestUserRowid
@@ -12,16 +16,14 @@ import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Tag(name = "Project", description = "프로젝트 초대 관련 API")
 class ProjectInviteController(
     private val projectInviteService: ProjectInviteService,
-    private val projectMemberService: ProjectMemberService
+    private val projectMemberService: ProjectMemberService,
 ) {
-
     @PostMapping(API_POST_PROJECT_INVITE_PATH)
     @Operation(
         summary = "프로젝트 초대",
@@ -43,7 +45,7 @@ class ProjectInviteController(
         description = "초대 코드를 통해 프로젝트에 참여합니다.",
     )
     fun inviteAccept(
-        @PathVariable code: String
+        @PathVariable code: String,
     ): ApiResponse<ApiPostProjectInviteAcceptResponse> {
         val response = projectInviteService.inviteAccept(code)
         return ApiResponse.of(ApiPostProjectInviteAcceptResponse(response))

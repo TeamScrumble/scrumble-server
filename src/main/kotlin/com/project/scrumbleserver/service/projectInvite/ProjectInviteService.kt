@@ -18,45 +18,49 @@ class ProjectInviteService(
     private val projectRepository: ProjectRepository,
     private val projectInviteRepository: ProjectInviteRepository,
     private val projectMemberRepository: ProjectMemberRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) {
     fun invite(
         projectRowid: Long,
-        email: String
+        email: String,
     ): Long {
-        val projectInviteRowid = transaction {
-            val project = projectRepository.findByIdOrNull(projectRowid)
-                ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+        val projectInviteRowid =
+            transaction {
+                val project =
+                    projectRepository.findByIdOrNull(projectRowid)
+                        ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
 
-            val member = memberRepository.findByEmail(email) ?: throw BusinessException("회원을 찾을 수 없습니다.")
+                val member = memberRepository.findByEmail(email) ?: throw BusinessException("회원을 찾을 수 없습니다.")
 
-            val projectInvite = projectInviteRepository.save(
-                ProjectInvite(
-                    project = project,
-                    member = member
-                )
-            )
+                val projectInvite =
+                    projectInviteRepository.save(
+                        ProjectInvite(
+                            project = project,
+                            member = member,
+                        ),
+                    )
 
-            projectInvite.rowid
-        }
+                projectInvite.rowid
+            }
 
         return projectInviteRowid
     }
 
-    fun inviteAccept(
-        code: String
-    ): Long = transaction {
-        val projectInvite = projectInviteRepository.findByUuid(code)
-            ?: throw BusinessException("초대 코드를 찾을 수 없습니다.")
+    fun inviteAccept(code: String): Long =
+        transaction {
+            val projectInvite =
+                projectInviteRepository.findByUuid(code)
+                    ?: throw BusinessException("초대 코드를 찾을 수 없습니다.")
 
-        val projectMember = projectMemberRepository.save(
-            ProjectMember(
-                project = projectInvite.project,
-                member = projectInvite.member,
-                permission = ProjectMemberPermission.CAN_VIEW
-            )
-        )
+            val projectMember =
+                projectMemberRepository.save(
+                    ProjectMember(
+                        project = projectInvite.project,
+                        member = projectInvite.member,
+                        permission = ProjectMemberPermission.CAN_VIEW,
+                    ),
+                )
 
-        projectMember.rowid
-    }
+            projectMember.rowid
+        }
 }

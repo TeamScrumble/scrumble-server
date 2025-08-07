@@ -19,7 +19,8 @@ class JwtTokenProvider(
         val now = Date()
         val expiryDate = Date(now.time + jwtProperties.tokenExpires)
 
-        return Jwts.builder()
+        return Jwts
+            .builder()
             .setSubject(userId.toString())
             .setIssuedAt(now)
             .setExpiration(expiryDate)
@@ -27,12 +28,11 @@ class JwtTokenProvider(
             .compact()
     }
 
-    fun provideRefreshToken(): String {
-        return UUID.randomUUID().toString()
-    }
+    fun provideRefreshToken(): String = UUID.randomUUID().toString()
 
-    fun decodeToken(token: String): Long {
-        return Jwts.parserBuilder()
+    fun decodeToken(token: String): Long =
+        Jwts
+            .parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
@@ -40,5 +40,4 @@ class JwtTokenProvider(
             .subject
             .toLongOrNull()
             ?: throw UnauthorizedException("유효하지 사용자 일련번호가 아닙니다.")
-    }
 }

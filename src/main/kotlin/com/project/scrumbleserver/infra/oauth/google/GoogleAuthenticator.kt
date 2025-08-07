@@ -32,26 +32,29 @@ class GoogleAuthenticator(
     }
 
     private fun callAuthApi(code: String): String {
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_FORM_URLENCODED
-            charset("UTF-8")
-        }
+        val headers =
+            HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_FORM_URLENCODED
+                charset("UTF-8")
+            }
 
-        val body = LinkedMultiValueMap<String, String>().apply {
-            add("code", code)
-            add("client_id", googleOauthProperties.clientId)
-            add("client_secret", googleOauthProperties.clientSecret)
-            add("redirect_uri", googleOauthProperties.redirectUri)
-            add("grant_type", "authorization_code")
-        }
+        val body =
+            LinkedMultiValueMap<String, String>().apply {
+                add("code", code)
+                add("client_id", googleOauthProperties.clientId)
+                add("client_secret", googleOauthProperties.clientSecret)
+                add("redirect_uri", googleOauthProperties.redirectUri)
+                add("grant_type", "authorization_code")
+            }
 
         val request = HttpEntity(body, headers)
-        val response = restTemplate.exchange(
-            GOOGLE_AUTH_API_ENDPOINT,
-            HttpMethod.POST,
-            request,
-            AuthResponse::class.java
-        )
+        val response =
+            restTemplate.exchange(
+                GOOGLE_AUTH_API_ENDPOINT,
+                HttpMethod.POST,
+                request,
+                AuthResponse::class.java,
+            )
 
         if (response.statusCode.isError) {
             throw UnauthorizedException("구글 인증 요청에 실패했습니다.")
@@ -74,18 +77,20 @@ class GoogleAuthenticator(
     )
 
     fun callUserInfoApi(accessToken: String): String {
-        val headers = HttpHeaders().apply {
-            setBearerAuth(accessToken)
-        }
+        val headers =
+            HttpHeaders().apply {
+                setBearerAuth(accessToken)
+            }
 
         val request = HttpEntity<Unit>(headers)
 
-        val response = restTemplate.exchange(
-            URI(GOOGLE_USER_API_ENDPOINT),
-            HttpMethod.GET,
-            request,
-            GoogleUserInfo::class.java
-        )
+        val response =
+            restTemplate.exchange(
+                URI(GOOGLE_USER_API_ENDPOINT),
+                HttpMethod.GET,
+                request,
+                GoogleUserInfo::class.java,
+            )
 
         if (response.statusCode.isError) {
             throw UnauthorizedException("구글 사용자 정보 요청에 실패했습니다.")

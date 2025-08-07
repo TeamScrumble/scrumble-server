@@ -9,11 +9,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 
 class UserIdResolver : HandlerMethodArgumentResolver {
-
-    override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(RequestUserRowid::class.java)
-            && parameter.parameterType == Long::class.java
-    }
+    override fun supportsParameter(parameter: MethodParameter): Boolean =
+        parameter.hasParameterAnnotation(RequestUserRowid::class.java) &&
+            parameter.parameterType == Long::class.java
 
     override fun resolveArgument(
         parameter: MethodParameter,

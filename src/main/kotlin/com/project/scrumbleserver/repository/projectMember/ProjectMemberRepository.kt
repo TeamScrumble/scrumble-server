@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectMemberRepository : JpaRepository<ProjectMember, Long> {
-    fun findByProjectAndMember(project: Project, member: Member): ProjectMember?
+    fun findByProjectAndMember(
+        project: Project,
+        member: Member,
+    ): ProjectMember?
 
     @Query("SELECT pm FROM project_member pm JOIN FETCH pm.member WHERE pm.project = :project")
     fun findByProject(project: Project): List<ProjectMember>

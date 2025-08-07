@@ -9,7 +9,6 @@ data class ApiPostProjectRequest(
     @field:NotBlank(message = "프로젝트 title은 필수입니다.")
     @field:Size(max = 30, message = "프로젝트 title은 30자 이하로 입력해야 합니다.")
     val title: String,
-
     @field:Size(max = 150, message = "프로젝트 description은 150자 이하로 입력해야 합니다.")
     val description: String?,
 )

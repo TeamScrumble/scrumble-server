@@ -26,13 +26,12 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "ProductBacklog", description = "프로덕트 백로그 관련 API")
 class ProductBacklogController(
     private val productBacklogService: ProductBacklogService,
-    private val projectMemberService: ProjectMemberService
+    private val projectMemberService: ProjectMemberService,
 ) {
-
     @PostMapping(API_POST_PRODUCT_BACKLOG_PATH)
     @Operation(
         summary = "프로덕트 백로그 등록",
-        description = "요청 정보를 기반으로 새 프로덕트 백로그를 생성합니다."
+        description = "요청 정보를 기반으로 새 프로덕트 백로그를 생성합니다.",
     )
     fun add(
         @RequestBody @Valid request: ApiPostProductBacklogRequest,
@@ -40,7 +39,7 @@ class ProductBacklogController(
     ): ApiResponse<ApiPostProductBacklogResponse> {
         projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.CAN_EDIT)
 
-        val productBacklogRowid = productBacklogService.insert(request)
+        val productBacklogRowid = productBacklogService.insert(request, userRowid)
         val response = ApiPostProductBacklogResponse(productBacklogRowid)
         return ApiResponse.of(response)
     }
@@ -48,11 +47,11 @@ class ProductBacklogController(
     @PostMapping(API_POST_PRODUCT_BACKLOG_ASSIGN_PATH)
     @Operation(
         summary = "프로덕트 백로그에 담당자를 추가한다.",
-        description = "프로덕트 백로그에 담당자를 추가하는 API 입니다."
+        description = "프로덕트 백로그에 담당자를 추가하는 API 입니다.",
     )
     fun assign(
         @RequestBody @Valid
-        request: ApiPostProductBacklogAssignRequest
+        request: ApiPostProductBacklogAssignRequest,
     ): ApiResponse<ApiPostProductBacklogAssignResponse> {
         productBacklogService.assign(request)
         val response = ApiPostProductBacklogAssignResponse(request.productBacklogRowid)
@@ -62,11 +61,11 @@ class ProductBacklogController(
     @GetMapping(API_GET_ALL_PRODUCT_BACKLOG_PATH)
     @Operation(
         summary = "전체 프로덕트 백로그 조회",
-        description = "특정 프로젝트의 모든 백로그 목록을 반환합니다."
+        description = "특정 프로젝트의 모든 백로그 목록을 반환합니다.",
     )
     fun findAll(
         @RequestBody
-        request: ApiGetAllProductBacklogRequest
+        request: ApiGetAllProductBacklogRequest,
     ): ApiResponse<List<ApiGetAllProductBacklogResponse>> {
         val productBacklogs = productBacklogService.findAll(request.projectRowid)
         return ApiResponse.of(productBacklogs)

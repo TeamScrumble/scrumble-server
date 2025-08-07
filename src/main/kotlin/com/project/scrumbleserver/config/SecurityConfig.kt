@@ -1,8 +1,8 @@
 package com.project.scrumbleserver.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
+import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.security.ForbiddenHandler
 import com.project.scrumbleserver.security.SecurityFilter
 import com.project.scrumbleserver.security.UnauthorizedHandler
@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
-
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
@@ -26,22 +25,21 @@ class SecurityConfig {
         memberRepository: MemberRepository,
         forbiddenHandler: ForbiddenHandler,
         unauthorizedHandler: UnauthorizedHandler,
-    ): SecurityFilterChain {
-        return http
+    ): SecurityFilterChain =
+        http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/google/login").permitAll()
-                    .anyRequest().authenticated()
-            }
-            .addFilterBefore(
+                it
+                    .requestMatchers("/api/v1/auth/google/login")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
+            }.addFilterBefore(
                 SecurityFilter(jwtTokenProvider, objectMapper, memberRepository),
-                UsernamePasswordAuthenticationFilter::class.java
-            )
-            .exceptionHandling {
+                UsernamePasswordAuthenticationFilter::class.java,
+            ).exceptionHandling {
                 it.authenticationEntryPoint(unauthorizedHandler)
                 it.accessDeniedHandler(forbiddenHandler)
-            }
-            .build()
-    }
+            }.build()
 }

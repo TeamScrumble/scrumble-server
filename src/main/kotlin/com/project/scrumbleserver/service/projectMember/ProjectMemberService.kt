@@ -26,69 +26,81 @@ class ProjectMemberService(
         private const val INSUFFICIENT_PROJECT_PERMISSION_MSG = "해당 작업을 수행할 권한이 없습니다."
     }
 
-    fun assertPermission(projectRowid: Long, memberRowid: Long, required: ProjectMemberPermission) {
+    fun assertPermission(
+        projectRowid: Long,
+        memberRowid: Long,
+        required: ProjectMemberPermission,
+    ) {
         transaction.readOnly {
-            val member = memberRepository.findByIdOrNull(memberRowid)
-                ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
+            val member =
+                memberRepository.findByIdOrNull(memberRowid)
+                    ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
 
-            val project = projectRepository.findByIdOrNull(projectRowid)
-                ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
+            val project =
+                projectRepository.findByIdOrNull(projectRowid)
+                    ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
 
-            val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
-                ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
+            val projectMember =
+                projectMemberRepository.findByProjectAndMember(project, member)
+                    ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
 
-            if(!projectMember.permission.hasAtLeast(required)) {
+            if (!projectMember.permission.hasAtLeast(required)) {
                 throw BusinessException(INSUFFICIENT_PROJECT_PERMISSION_MSG)
             }
         }
     }
 
-    fun findAllByProjectRowid(projectRowid: Long): ApiGetProjectMembersResponse = transaction.readOnly {
-        val project = projectRepository.findByIdOrNull(projectRowid)
-            ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
+    fun findAllByProjectRowid(projectRowid: Long): ApiGetProjectMembersResponse =
+        transaction.readOnly {
+            val project =
+                projectRepository.findByIdOrNull(projectRowid)
+                    ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
 
-        val projectMembers = projectMemberRepository.findByProject(project)
+            val projectMembers = projectMemberRepository.findByProject(project)
 
-        ApiGetProjectMembersResponse(
-            projectMembers.map { projectMember ->
-                ApiGetProjectMembersResponse.Member(
-                    memberRowid = projectMember.member.rowid,
-                    email = projectMember.member.email,
-                    job = projectMember.member.job,
-                    profileImageUrl = projectMember.member.profileImageUrl,
-                    permission = projectMember.permission.name
-                )
-            }
-        )
-    }
+            ApiGetProjectMembersResponse(
+                projectMembers.map { projectMember ->
+                    ApiGetProjectMembersResponse.Member(
+                        memberRowid = projectMember.member.rowid,
+                        email = projectMember.member.email,
+                        job = projectMember.member.job,
+                        profileImageUrl = projectMember.member.profileImageUrl,
+                        permission = projectMember.permission.name,
+                    )
+                },
+            )
+        }
 
     fun edit(
         projectRowid: Long,
         targetMemberRowid: Long,
         targetPermission: ProjectMemberPermission,
         loginMemberRowid: Long,
-    ): Long = transaction {
-        memberRepository.findByIdOrNull(loginMemberRowid)
-            ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
+    ): Long =
+        transaction {
+            memberRepository.findByIdOrNull(loginMemberRowid)
+                ?: throw BusinessException(MEMBER_NOT_FOUND_MSG)
 
-        val project = projectRepository.findByIdOrNull(projectRowid)
-            ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
+            val project =
+                projectRepository.findByIdOrNull(projectRowid)
+                    ?: throw BusinessException(PROJECT_NOT_FOUND_MSG)
 
-        val projectMembers = projectMemberRepository.findByProject(project)
-        val targetMember = projectMembers.find { it.member.rowid == targetMemberRowid }
-            ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
+            val projectMembers = projectMemberRepository.findByProject(project)
+            val targetMember =
+                projectMembers.find { it.member.rowid == targetMemberRowid }
+                    ?: throw BusinessException(NOT_PROJECT_MEMBER_MSG)
 
-        if (targetMember.permission == targetPermission) {
+            if (targetMember.permission == targetPermission) {
+                return@transaction targetMember.rowid
+            }
+
+            checkIfLastOwner(projectMembers, targetMember, targetPermission)
+
+            targetMember.permission = targetPermission
+            projectMemberRepository.save(targetMember)
+
             return@transaction targetMember.rowid
         }
-
-        checkIfLastOwner(projectMembers, targetMember, targetPermission)
-
-        targetMember.permission = targetPermission
-        projectMemberRepository.save(targetMember)
-
-        return@transaction targetMember.rowid
-    }
 
     private fun checkIfLastOwner(
         projectMembers: List<ProjectMember>,

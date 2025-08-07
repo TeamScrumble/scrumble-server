@@ -13,16 +13,12 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_rowid")
     var rowid: Long = 0L,
-
     @Column(nullable = false, length = 100)
     var email: String,
-
     @Column(nullable = false, length = 50)
     var nickname: String = "",
-
     @Column(nullable = false, length = 30)
     var job: String = "",
-
     @Column(name = "profile_image_url", nullable = false, length = 1000)
     var profileImageUrl: String = "",
 ) : BaseEntity() {

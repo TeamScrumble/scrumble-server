@@ -1,10 +1,10 @@
 package com.project.scrumbleserver.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.global.api.ErrorResponse
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
+import com.project.scrumbleserver.repository.member.MemberRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -20,8 +20,8 @@ class SecurityFilter(
     private val objectMapper: ObjectMapper,
     private val memberRepository: MemberRepository,
 ) : OncePerRequestFilter() {
-
     private class UserNotFoundException : RuntimeException()
+
     private class UserInfoEmptyException : RuntimeException()
 
     companion object {
@@ -48,19 +48,21 @@ class SecurityFilter(
             runCatching {
                 val userRowid = jwtTokenProvider.decodeToken(token)
 
-                val user = memberRepository.findByIdOrNull(userRowid)
-                    ?: throw UserNotFoundException()
+                val user =
+                    memberRepository.findByIdOrNull(userRowid)
+                        ?: throw UserNotFoundException()
                 if (user.isInfoEmpty) throw UserInfoEmptyException()
 
                 val authentication = UsernamePasswordAuthenticationToken(userRowid, null, EMPTY_ROLE)
                 SecurityContextHolder.getContext().authentication = authentication
             }.getOrElse { e ->
-                val code = when (e) {
-                    is ExpiredJwtException -> TOKEN_EXPIRED
-                    is UserNotFoundException -> USER_NOT_FOUND
-                    is UserInfoEmptyException -> USER_INFO_EMPTY
-                    else -> null
-                }
+                val code =
+                    when (e) {
+                        is ExpiredJwtException -> TOKEN_EXPIRED
+                        is UserNotFoundException -> USER_NOT_FOUND
+                        is UserInfoEmptyException -> USER_INFO_EMPTY
+                        else -> null
+                    }
 
                 code?.let {
                     sendErrorResponse(response, code)

@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProductBacklogTagService(
     private val tagRepository: TagRepository,
-    private val productBacklogTagRepository: ProductBacklogTagRepository
+    private val productBacklogTagRepository: ProductBacklogTagRepository,
 ) {
     @Transactional
     fun saveProductBacklogTags(
         project: Project,
         productBacklog: ProductBacklog,
-        requestedTagIds: Set<Long>
+        requestedTagIds: Set<Long>,
     ) {
         val tags = tagRepository.findAllByIdWithProject(requestedTagIds, project.rowid)
 
@@ -26,18 +26,18 @@ class ProductBacklogTagService(
             throw BusinessException("존재하지 않는 태그가 포함되어 있습니다.")
         }
 
-        val productBacklogTags = tags.map {
-            ProductBacklogTag(
-                productBacklog = productBacklog,
-                tag = it
-            )
-        }
+        val productBacklogTags =
+            tags.map {
+                ProductBacklogTag(
+                    productBacklog = productBacklog,
+                    tag = it,
+                )
+            }
 
         productBacklogTagRepository.saveAll(productBacklogTags)
     }
 
     @Transactional(readOnly = true)
-    fun findAllByProductBacklogRowidList(productBacklogRowidList: Set<Long>): List<ProductBacklogTag> {
-        return productBacklogTagRepository.findAllByProductBacklogRowidInFetchJoin(productBacklogRowidList)
-    }
+    fun findAllByProductBacklogRowidList(productBacklogRowidList: Set<Long>): List<ProductBacklogTag> =
+        productBacklogTagRepository.findAllByProductBacklogRowidInFetchJoin(productBacklogRowidList)
 }

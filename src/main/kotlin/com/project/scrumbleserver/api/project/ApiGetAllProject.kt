@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 const val API_GET_ALL_PROJECT_PATH = "/api/v1/projects"
 
 data class ApiGetAllProjectResponse(
-    val projects: List<Project>
+    val projects: List<Project>,
 ) {
     data class Project(
         val rowid: Long,

@@ -13,21 +13,26 @@ class InMemoryCacheStorage : CacheStorage {
         private val expiredAt: Long,
     ) {
         companion object {
-            fun of(value: String, expiration: Long): CacheEntry {
-                return CacheEntry(value, System.currentTimeMillis() + expiration)
-            }
+            fun of(
+                value: String,
+                expiration: Long,
+            ): CacheEntry = CacheEntry(value, System.currentTimeMillis() + expiration)
         }
 
         val isExpired: Boolean
             get() = System.currentTimeMillis() > expiredAt
     }
 
-    override fun put(key: String, value: String, expiration: Long) {
+    override fun put(
+        key: String,
+        value: String,
+        expiration: Long,
+    ) {
         storage[key] = CacheEntry.of(value, expiration)
     }
 
-    override fun get(key: String): String? {
-        return storage[key]?.let {
+    override fun get(key: String): String? =
+        storage[key]?.let {
             if (it.isExpired) {
                 storage.remove(key)
                 null
@@ -35,7 +40,6 @@ class InMemoryCacheStorage : CacheStorage {
                 it.value
             }
         }
-    }
 
     override fun remove(key: String) {
         storage.remove(key)

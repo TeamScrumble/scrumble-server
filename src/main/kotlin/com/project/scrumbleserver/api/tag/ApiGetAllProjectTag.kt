@@ -10,7 +10,7 @@ data class ApiGetAllProjectTagRequest(
 )
 
 data class ApiGetAllProjectTagResponse(
-    val tags: List<Tag>
+    val tags: List<Tag>,
 ) {
     data class Tag(
         val tagRowid: Long,

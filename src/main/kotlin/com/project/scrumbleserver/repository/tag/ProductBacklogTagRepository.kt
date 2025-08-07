@@ -8,14 +8,15 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProductBacklogTagRepository : JpaRepository<ProductBacklogTag, Long> {
-
-    @Query("""
+    @Query(
+        """
         SELECT pbt FROM product_backlog_tag pbt
         JOIN FETCH pbt.tag t
         JOIN FETCH t.project
         WHERE pbt.productBacklog.rowid IN :productBacklogRowidList
-    """)
+    """,
+    )
     fun findAllByProductBacklogRowidInFetchJoin(
-        @Param("productBacklogRowidList") productBacklogRowidList: Set<Long>
+        @Param("productBacklogRowidList") productBacklogRowidList: Set<Long>,
     ): List<ProductBacklogTag>
 }

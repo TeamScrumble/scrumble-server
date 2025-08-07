@@ -1,12 +1,12 @@
 package com.project.scrumbleserver.service.auth
 
 import com.project.scrumbleserver.domain.member.Member
-import com.project.scrumbleserver.repository.member.MemberRepository
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.infra.cache.CacheStorage
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
 import com.project.scrumbleserver.infra.oauth.google.GoogleAuthenticator
+import com.project.scrumbleserver.repository.member.MemberRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -29,28 +29,30 @@ class AuthService(
 
     fun login(code: String): AuthToken {
         val userEmail = googleAuthenticator.authenticate(code)
-        val member = transaction {
-            memberRepository.findByEmail(userEmail) ?: run {
-                memberRepository.save(Member(email = userEmail))
+        val member =
+            transaction {
+                memberRepository.findByEmail(userEmail) ?: run {
+                    memberRepository.save(Member(email = userEmail))
+                }
             }
-        }
 
         val accessToken = jwtTokenProvider.provideAccessToken(member.rowid)
         val refreshToken = jwtTokenProvider.provideRefreshToken()
 
-        cacheStorage.put("${REFRESH_TOKEN_PREFIX}${refreshToken}", member.rowid.toString(), SEVEN_DAYS)
+        cacheStorage.put("${REFRESH_TOKEN_PREFIX}$refreshToken", member.rowid.toString(), SEVEN_DAYS)
 
         return AuthToken(accessToken, refreshToken)
     }
 
     fun refresh(refreshToken: String): AuthToken {
-        val memberId = cacheStorage.get("${REFRESH_TOKEN_PREFIX}${refreshToken}")?.toLongOrNull()
-            ?: throw BusinessException("유효하지 않은 인증 정보 입니다.")
+        val memberId =
+            cacheStorage.get("${REFRESH_TOKEN_PREFIX}$refreshToken")?.toLongOrNull()
+                ?: throw BusinessException("유효하지 않은 인증 정보 입니다.")
 
         val accessToken = jwtTokenProvider.provideAccessToken(memberId)
         val refreshToken = jwtTokenProvider.provideRefreshToken()
 
-        cacheStorage.put("${REFRESH_TOKEN_PREFIX}${refreshToken}", memberId.toString(), SEVEN_DAYS)
+        cacheStorage.put("${REFRESH_TOKEN_PREFIX}$refreshToken", memberId.toString(), SEVEN_DAYS)
 
         return AuthToken(accessToken, refreshToken)
     }

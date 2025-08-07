@@ -25,49 +25,54 @@ class ProductBacklogService(
     private val memberRepository: MemberRepository,
     private val assigneeRepository: AssigneeRepository,
 ) {
-
     fun insert(
         request: ApiPostProductBacklogRequest,
         userRowid: Long,
-    ): Long = transaction {
-        val project = projectRepository.findByIdOrNull(request.projectRowid)
-            ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+    ): Long =
+        transaction {
+            val project =
+                projectRepository.findByIdOrNull(request.projectRowid)
+                    ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
 
-        val creator = memberRepository.findByIdOrNull(userRowid)
-            ?: throw BusinessException("사용자를 찾을 수 없습니다.")
+            val creator =
+                memberRepository.findByIdOrNull(userRowid)
+                    ?: throw BusinessException("사용자를 찾을 수 없습니다.")
 
-        val productBacklog = productBacklogRepository.save(
-            ProductBacklog(
-                project = project,
-                creator = creator,
-                title = request.title,
-                description = request.description,
-                priority = request.priority,
+            val productBacklog =
+                productBacklogRepository.save(
+                    ProductBacklog(
+                        project = project,
+                        creator = creator,
+                        title = request.title,
+                        description = request.description,
+                        priority = request.priority,
+                    ),
+                )
+
+            productBacklogTagService.saveProductBacklogTags(
+                project,
+                productBacklog,
+                request.tags,
             )
-        )
 
-        productBacklogTagService.saveProductBacklogTags(
-            project,
-            productBacklog,
-            request.tags
-        )
+            assignMembers(request.assignees, productBacklog)
 
-        assignMembers(request.assignees, productBacklog)
-
-        productBacklog.rowid
-    }
-
-    fun assign(request: ApiPostProductBacklogAssignRequest) = transaction {
-        val productBacklog = productBacklogRepository.findByIdOrNull(request.productBacklogRowid)
-            ?: throw BusinessException("프로덕트 백로그를 찾을 수 없습니다.")
-
-        val registeredAssignees = assigneeRepository.findAllByProductBacklog(productBacklog)
-        registeredAssignees.forEach { assignees ->
-            assignees.delete()
+            productBacklog.rowid
         }
 
-        assignMembers(request.assignees, productBacklog)
-    }
+    fun assign(request: ApiPostProductBacklogAssignRequest) =
+        transaction {
+            val productBacklog =
+                productBacklogRepository.findByIdOrNull(request.productBacklogRowid)
+                    ?: throw BusinessException("프로덕트 백로그를 찾을 수 없습니다.")
+
+            val registeredAssignees = assigneeRepository.findAllByProductBacklog(productBacklog)
+            registeredAssignees.forEach { assignees ->
+                assignees.delete()
+            }
+
+            assignMembers(request.assignees, productBacklog)
+        }
 
     private fun assignMembers(
         memberRowidSet: Set<Long>,
@@ -79,47 +84,51 @@ class ProductBacklogService(
             throw BusinessException("존재하지 않은 멤버가 포함되어 있습니다.")
         }
 
-        val assignees = members.map { member ->
-            Assignee(
-                member = member,
-                productBacklog = productBacklog
-            )
-        }
+        val assignees =
+            members.map { member ->
+                Assignee(
+                    member = member,
+                    productBacklog = productBacklog,
+                )
+            }
 
         assigneeRepository.saveAll(assignees)
     }
 
-    fun findAll(projectRowid: Long): List<ApiGetAllProductBacklogResponse> = transaction.readOnly {
-        val productBacklogList = productBacklogRepository.findAllByProjectRowid(projectRowid)
+    fun findAll(projectRowid: Long): List<ApiGetAllProductBacklogResponse> =
+        transaction.readOnly {
+            val productBacklogList = productBacklogRepository.findAllByProjectRowid(projectRowid)
 
-        val productBacklogsRowidList = productBacklogList.map { it.rowid }.toSet()
-        val productBacklogTags = productBacklogTagService.findAllByProductBacklogRowidList(productBacklogsRowidList)
+            val productBacklogsRowidList = productBacklogList.map { it.rowid }.toSet()
+            val productBacklogTags = productBacklogTagService.findAllByProductBacklogRowidList(productBacklogsRowidList)
 
-        val tagMap: Map<Long, List<Tag>> = productBacklogTags
-            .groupBy { it.productBacklog.rowid }
-            .mapValues { entry -> entry.value.map { it.tag } }
+            val tagMap: Map<Long, List<Tag>> =
+                productBacklogTags
+                    .groupBy { it.productBacklog.rowid }
+                    .mapValues { entry -> entry.value.map { it.tag } }
 
-        productBacklogList.map { productBacklog ->
-            ApiGetAllProductBacklogResponse(
-                listOf(
-                    ApiGetAllProductBacklogResponse.ProductBacklog(
-                        productBacklogRowid = productBacklog.rowid,
-                        title = productBacklog.title,
-                        description = productBacklog.description,
-                        priority = productBacklog.priority,
-                        tags = tagMap[productBacklog.rowid].orEmpty()
-                            .map { tag ->
-                                ApiGetAllProductBacklogResponse.ProductBacklogTag(
-                                    productBacklogTagRowid = tag.rowid,
-                                    title = tag.title,
-                                    color = tag.color,
-                                )
-                            },
-                        regDate = productBacklog.regDate
-                    )
+            productBacklogList.map { productBacklog ->
+                ApiGetAllProductBacklogResponse(
+                    listOf(
+                        ApiGetAllProductBacklogResponse.ProductBacklog(
+                            productBacklogRowid = productBacklog.rowid,
+                            title = productBacklog.title,
+                            description = productBacklog.description,
+                            priority = productBacklog.priority,
+                            tags =
+                                tagMap[productBacklog.rowid]
+                                    .orEmpty()
+                                    .map { tag ->
+                                        ApiGetAllProductBacklogResponse.ProductBacklogTag(
+                                            productBacklogTagRowid = tag.rowid,
+                                            title = tag.title,
+                                            color = tag.color,
+                                        )
+                                    },
+                            regDate = productBacklog.regDate,
+                        ),
+                    ),
                 )
-            )
+            }
         }
-    }
 }
-

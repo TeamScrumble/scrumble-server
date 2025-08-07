@@ -18,13 +18,14 @@ class TagService(
 ) {
     @Transactional
     fun saveBasicTags(project: Project) {
-        val tags = BasicTag.entries.map {
-            Tag(
-                project = project,
-                title = it.title,
-                color = it.color,
-            )
-        }
+        val tags =
+            BasicTag.entries.map {
+                Tag(
+                    project = project,
+                    title = it.title,
+                    color = it.color,
+                )
+            }
 
         tagRepository.saveAll(tags)
     }
@@ -41,9 +42,9 @@ class TagService(
                     tagRowid = it.rowid,
                     projectRowid = it.project.rowid,
                     title = it.title,
-                    color = it.color
+                    color = it.color,
                 )
-            }
+            },
         )
     }
 }

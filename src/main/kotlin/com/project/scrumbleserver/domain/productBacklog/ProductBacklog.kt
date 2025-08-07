@@ -20,22 +20,17 @@ class ProductBacklog(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_backlog_rowid")
     var rowid: Long = 0L,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_rowid", nullable = false)
     val project: Project,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_rowid", nullable = false)
     val creator: Member,
-
     @Column(nullable = false, length = 30)
     var title: String,
-
     @Column(nullable = false, length = 300)
     var description: String = "",
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var priority: ProductBacklogPriority = ProductBacklogPriority.NONE
+    var priority: ProductBacklogPriority = ProductBacklogPriority.NONE,
 ) : BaseEntity()

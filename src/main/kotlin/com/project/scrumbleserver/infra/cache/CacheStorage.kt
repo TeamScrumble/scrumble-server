@@ -5,7 +5,11 @@ interface CacheStorage {
         private const val ONE_DAY = 3600L * 24L
     }
 
-    fun put(key: String, value: String, expiration: Long = ONE_DAY)
+    fun put(
+        key: String,
+        value: String,
+        expiration: Long = ONE_DAY,
+    )
 
     fun get(key: String): String?
 

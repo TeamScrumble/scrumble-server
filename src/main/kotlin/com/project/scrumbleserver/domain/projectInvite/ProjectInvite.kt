@@ -11,9 +11,9 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import java.util.UUID
 import jakarta.persistence.PrePersist
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity(name = "project_invite_link")
 class ProjectInvite(
@@ -21,18 +21,14 @@ class ProjectInvite(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_invite_link_rowid")
     var rowid: Long = 0L,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_rowid", nullable = false)
     val project: Project,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_rowid", nullable = false)
     val member: Member,
-
     @Column(length = 100, nullable = false)
     var uuid: String = "",
-
     @Column(name = "expired_at", nullable = false, updatable = false)
     var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 ) : BaseEntity() {

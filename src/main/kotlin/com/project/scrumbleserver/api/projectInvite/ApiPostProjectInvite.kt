@@ -11,7 +11,7 @@ data class ApiPostProjectInviteRequest(
     @field:Size(max = 100, message = "이메일은 100자 이하로 입력해야 합니다.")
     val email: String,
     @field:NotNull(message = "projectRowid는 필수입니다.")
-    val projectRowid: Long
+    val projectRowid: Long,
 )
 
 data class ApiPostProjectInviteResponse(

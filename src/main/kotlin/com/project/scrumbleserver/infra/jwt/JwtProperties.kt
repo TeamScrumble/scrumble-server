@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("jwt")
 data class JwtProperties(
-    val secret: String
+    val secret: String,
 ) {
     companion object {
         const val ONE_HOUR = 3600L * 1000L

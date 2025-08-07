@@ -9,15 +9,17 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
-    @Query("""
+    @Query(
+        """
         SELECT t FROM tag t 
         JOIN FETCH t.project 
         WHERE t.rowid IN :ids 
         AND t.project.rowid = :projectRowid
-    """)
+    """,
+    )
     fun findAllByIdWithProject(
         @Param("ids") ids: Set<Long>,
-        @Param("projectRowid") projectRowid: Long
+        @Param("projectRowid") projectRowid: Long,
     ): List<Tag>
 
     fun findAllByProject(project: Project): List<Tag>

@@ -11,12 +11,15 @@ import org.springframework.stereotype.Service
 @Service
 class MemberService(
     private val transaction: Transaction,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) {
-
-    fun enterAdditionalInfo(request: ApiPostMemberInfoRequest, memberRowid: Long) = transaction {
-        val member = memberRepository.findByIdOrNull(memberRowid)
-            ?: throw BusinessException("존재하지 않는 회원입니다.")
+    fun enterAdditionalInfo(
+        request: ApiPostMemberInfoRequest,
+        memberRowid: Long,
+    ) = transaction {
+        val member =
+            memberRepository.findByIdOrNull(memberRowid)
+                ?: throw BusinessException("존재하지 않는 회원입니다.")
 
         member.also {
             it.nickname = request.nickname
@@ -25,16 +28,18 @@ class MemberService(
         }
     }
 
-    fun findById(memberRowid: Long): ApiGetMemberInfoResponse = transaction.readOnly {
-        val member = memberRepository.findByIdOrNull(memberRowid)
-            ?: throw BusinessException("존재하지 않는 회원입니다.")
+    fun findById(memberRowid: Long): ApiGetMemberInfoResponse =
+        transaction.readOnly {
+            val member =
+                memberRepository.findByIdOrNull(memberRowid)
+                    ?: throw BusinessException("존재하지 않는 회원입니다.")
 
-        ApiGetMemberInfoResponse(
-            rowid = member.rowid,
-            email = member.email,
-            nickname = member.nickname,
-            job = member.job,
-            profileImageUrl = member.profileImageUrl
-        )
-    }
+            ApiGetMemberInfoResponse(
+                rowid = member.rowid,
+                email = member.email,
+                nickname = member.nickname,
+                job = member.job,
+                profileImageUrl = member.profileImageUrl,
+            )
+        }
 }

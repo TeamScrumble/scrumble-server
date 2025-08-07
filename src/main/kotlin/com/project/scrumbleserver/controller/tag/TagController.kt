@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Tag(name = "Tag", description = "Tag 관련 API")
 class TagController(
-    private val tagService: TagService
+    private val tagService: TagService,
 ) {
-
     @GetMapping(API_GET_ALL_PROJECT_TAG_PATH)
     @Operation(
         summary = "프로젝트의 태그 목록 조회",

@@ -7,12 +7,13 @@ import org.springframework.transaction.support.TransactionTemplate
 
 @Component
 class Transaction(
-    private val transactionManager: PlatformTransactionManager
+    private val transactionManager: PlatformTransactionManager,
 ) {
     operator fun <T> invoke(action: () -> T): T {
-        val transactionTemplate = TransactionTemplate(transactionManager).apply {
-            isReadOnly = false
-        }
+        val transactionTemplate =
+            TransactionTemplate(transactionManager).apply {
+                isReadOnly = false
+            }
 
         return transactionTemplate.execute {
             action()
@@ -20,9 +21,10 @@ class Transaction(
     }
 
     fun <T> readOnly(readOnlyAction: () -> T): T {
-        val transactionTemplate = TransactionTemplate(transactionManager).apply {
-            isReadOnly = true
-        }
+        val transactionTemplate =
+            TransactionTemplate(transactionManager).apply {
+                isReadOnly = true
+            }
 
         return transactionTemplate.execute {
             readOnlyAction()

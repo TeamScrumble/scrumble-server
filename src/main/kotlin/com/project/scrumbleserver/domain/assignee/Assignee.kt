@@ -18,12 +18,10 @@ class Assignee(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assignee_rowid")
     var rowid: Long = 0L,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_rowid", nullable = false)
     val member: Member,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_backlog_rowid", nullable = false)
-    val productBacklog: ProductBacklog
+    val productBacklog: ProductBacklog,
 ) : BaseEntity()

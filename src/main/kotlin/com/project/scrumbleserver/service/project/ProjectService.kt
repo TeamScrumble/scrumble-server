@@ -30,47 +30,54 @@ class ProjectService(
     fun insert(
         thumbnail: MultipartFile?,
         request: ApiPostProjectRequest,
-        userRowid: Long
+        userRowid: Long,
     ): ApiPostProjectResponse {
-        val thumbnailData = thumbnail
-            ?.takeIf { !it.isEmpty }
-            ?.bytes
-            ?: thumbnailGenerator.generate(request.title.getOrNull(0) ?: ' ')
+        val thumbnailData =
+            thumbnail
+                ?.takeIf { !it.isEmpty }
+                ?.bytes
+                ?: thumbnailGenerator.generate(request.title.getOrNull(0) ?: ' ')
 
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
         return transaction {
             val member = memberRepository.findByIdOrNull(userRowid) ?: throw BusinessException("Member with rowid $userRowid not found")
 
-            val project = projectRepository.save(Project(
-                title = request.title,
-                description = request.description ?: "",
-                thumbnail = thumbnailUrl
-            ))
+            val project =
+                projectRepository.save(
+                    Project(
+                        title = request.title,
+                        description = request.description ?: "",
+                        thumbnail = thumbnailUrl,
+                    ),
+                )
 
             tagService.saveBasicTags(project)
 
-            projectMemberRepository.save(ProjectMember(
-                project = project,
-                member = member,
-                permission = ProjectMemberPermission.OWNER
-            ))
+            projectMemberRepository.save(
+                ProjectMember(
+                    project = project,
+                    member = member,
+                    permission = ProjectMemberPermission.OWNER,
+                ),
+            )
 
             ApiPostProjectResponse(project.rowid)
         }
     }
 
-    fun findAll(): ApiGetAllProjectResponse = transaction.readOnly {
-        return@readOnly ApiGetAllProjectResponse(
-            projectRepository.findAll().map {
-                ApiGetAllProjectResponse.Project(
-                    rowid = it.rowid,
-                    title = it.title,
-                    description = it.description,
-                    thumbnailUrl = it.thumbnail,
-                    regDate = it.regDate
-                )
-            }
-        )
-    }
+    fun findAll(): ApiGetAllProjectResponse =
+        transaction.readOnly {
+            return@readOnly ApiGetAllProjectResponse(
+                projectRepository.findAll().map {
+                    ApiGetAllProjectResponse.Project(
+                        rowid = it.rowid,
+                        title = it.title,
+                        description = it.description,
+                        thumbnailUrl = it.thumbnail,
+                        regDate = it.regDate,
+                    )
+                },
+            )
+        }
 }
