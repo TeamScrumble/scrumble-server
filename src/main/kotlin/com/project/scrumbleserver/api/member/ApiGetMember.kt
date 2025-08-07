@@ -6,6 +6,5 @@ data class ApiGetMemberInfoResponse(
     val rowid: Long,
     val email: String,
     val nickname: String,
-    val job: String,
     val profileImageUrl: String? = null,
 )

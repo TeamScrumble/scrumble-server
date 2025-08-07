@@ -29,10 +29,11 @@ class AuthService(
 
     fun login(code: String): AuthToken {
         val userEmail = googleAuthenticator.authenticate(code)
+        val defaultNickname = userEmail.substringBefore('@')
         val member =
             transaction {
                 memberRepository.findByEmail(userEmail) ?: run {
-                    memberRepository.save(Member(email = userEmail))
+                    memberRepository.save(Member(email = userEmail, nickname = defaultNickname))
                 }
             }
 

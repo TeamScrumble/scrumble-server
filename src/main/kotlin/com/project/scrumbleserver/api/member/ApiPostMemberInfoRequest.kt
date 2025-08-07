@@ -9,7 +9,5 @@ data class ApiPostMemberInfoRequest(
     @field:NotBlank("nickname는 필수로 입력해 주세요.")
     @field:Size(min = 2, max = 15, message = "최소 2자 이상 15자 이하로 입력해 주세요.")
     val nickname: String,
-    @field:NotBlank("job은 필수로 입력해 주세요.")
-    val job: String,
     val profileImageUrl: String,
 )
