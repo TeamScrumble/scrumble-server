@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface MemberRepository : JpaRepository<Member, Long> {
     fun findByEmail(email: String): Member?
+
+    fun findAllByRowidIn(rowids: List<Long>): List<Member>
 }

@@ -1,9 +1,12 @@
 package com.project.scrumbleserver.controller.productBacklog
 
 import com.project.scrumbleserver.api.productBacklog.API_GET_ALL_PRODUCT_BACKLOG_PATH
+import com.project.scrumbleserver.api.productBacklog.API_POST_PRODUCT_BACKLOG_ASSIGN_PATH
 import com.project.scrumbleserver.api.productBacklog.API_POST_PRODUCT_BACKLOG_PATH
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogRequest
 import com.project.scrumbleserver.api.productBacklog.ApiGetAllProductBacklogResponse
+import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssignRequest
+import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogAssignResponse
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogRequest
 import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogResponse
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
@@ -39,6 +42,20 @@ class ProductBacklogController(
 
         val productBacklogRowid = productBacklogService.insert(request)
         val response = ApiPostProductBacklogResponse(productBacklogRowid)
+        return ApiResponse.of(response)
+    }
+
+    @PostMapping(API_POST_PRODUCT_BACKLOG_ASSIGN_PATH)
+    @Operation(
+        summary = "프로덕트 백로그에 담당자를 추가한다.",
+        description = "프로덕트 백로그에 담당자를 추가하는 API 입니다."
+    )
+    fun assign(
+        @RequestBody @Valid
+        request: ApiPostProductBacklogAssignRequest
+    ): ApiResponse<ApiPostProductBacklogAssignResponse> {
+        productBacklogService.assign(request)
+        val response = ApiPostProductBacklogAssignResponse(request.productBacklogRowid)
         return ApiResponse.of(response)
     }
 

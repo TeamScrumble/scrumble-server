@@ -15,6 +15,7 @@ abstract class BaseEntity {
     @Column(name = "reg_date", updatable = false)
     var regDate: LocalDateTime = LocalDateTime.now()
 
+    @Column(name = "is_deleted", nullable = false)
     private var isDeleted: Boolean = false
 
     fun delete() {

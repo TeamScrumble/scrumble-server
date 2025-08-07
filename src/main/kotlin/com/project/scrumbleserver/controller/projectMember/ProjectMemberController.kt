@@ -1,7 +1,10 @@
 package com.project.scrumbleserver.controller.projectMember
 
 import com.project.scrumbleserver.api.project.*
+import com.project.scrumbleserver.api.projectMember.API_GET_PROJECT_MEMBERS
 import com.project.scrumbleserver.api.projectMember.API_PUT_PROJECT_MEMBER_PERMISSION_PATH
+import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersRequest
+import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersResponse
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionRequest
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionResponse
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
@@ -25,6 +28,18 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectMemberController(
     private val projectMemberService: ProjectMemberService,
 ) {
+    @GetMapping(API_GET_PROJECT_MEMBERS)
+    @Operation(
+        summary = "프로젝트 회원 조회",
+        description = "특정 프로젝트에 속한 모든 회원의 정보를 반환합니다.",
+    )
+    fun findAllProjectMembers(
+        @RequestBody request: ApiGetProjectMembersRequest
+    ): ApiResponse<ApiGetProjectMembersResponse> {
+        val projectMembers = projectMemberService.findAllByProjectRowid(request.projectRowid)
+        return ApiResponse.of(projectMembers)
+    }
+
     @PutMapping(API_PUT_PROJECT_MEMBER_PERMISSION_PATH)
     @Operation(
         summary = "프로젝트 회원 권한 수정",
