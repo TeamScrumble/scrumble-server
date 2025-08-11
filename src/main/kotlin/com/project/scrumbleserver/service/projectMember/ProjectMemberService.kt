@@ -63,7 +63,6 @@ class ProjectMemberService(
                     ApiGetProjectMembersResponse.Member(
                         memberRowid = projectMember.member.rowid,
                         email = projectMember.member.email,
-                        job = projectMember.member.job,
                         profileImageUrl = projectMember.member.profileImageUrl,
                         permission = projectMember.permission.name,
                     )

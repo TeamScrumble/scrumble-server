@@ -22,7 +22,6 @@ class SecurityConfig {
         http: HttpSecurity,
         jwtTokenProvider: JwtTokenProvider,
         objectMapper: ObjectMapper,
-        memberRepository: MemberRepository,
         forbiddenHandler: ForbiddenHandler,
         unauthorizedHandler: UnauthorizedHandler,
     ): SecurityFilterChain =
@@ -36,7 +35,7 @@ class SecurityConfig {
                     .anyRequest()
                     .authenticated()
             }.addFilterBefore(
-                SecurityFilter(jwtTokenProvider, objectMapper, memberRepository),
+                SecurityFilter(jwtTokenProvider, objectMapper),
                 UsernamePasswordAuthenticationFilter::class.java,
             ).exceptionHandling {
                 it.authenticationEntryPoint(unauthorizedHandler)

@@ -12,7 +12,6 @@ data class ApiGetProjectMembersResponse(
     data class Member(
         val memberRowid: Long,
         val email: String,
-        val job: String,
         val profileImageUrl: String?,
         val permission: String,
     )
