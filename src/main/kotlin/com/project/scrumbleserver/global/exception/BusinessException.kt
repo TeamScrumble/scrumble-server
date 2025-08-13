@@ -6,4 +6,6 @@ import org.springframework.http.HttpStatus
 class BusinessException(
     errorCode: ErrorCode,
     val status: HttpStatus = HttpStatus.BAD_REQUEST
-) : RuntimeException(errorCode.code)
+) : RuntimeException(errorCode.code) {
+    override val message: String = errorCode.code
+}
