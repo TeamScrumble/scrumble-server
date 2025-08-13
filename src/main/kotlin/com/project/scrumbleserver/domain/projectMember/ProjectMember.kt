@@ -20,13 +20,24 @@ class ProjectMember(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_rowid")
     var rowid: Long = 0L,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_rowid", nullable = false)
     val project: Project,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_rowid", nullable = false)
     val member: Member,
+
+    @Column(nullable = false, length = 50)
+    var role: String = DEFAULT_ROLE,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     var permission: ProjectMemberPermission = ProjectMemberPermission.CAN_VIEW,
-) : BaseEntity()
+) : BaseEntity() {
+
+    companion object {
+        const val DEFAULT_ROLE = "participant"
+    }
+}
