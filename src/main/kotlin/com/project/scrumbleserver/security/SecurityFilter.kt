@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.global.api.ErrorResponse
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
-import com.project.scrumbleserver.repository.member.MemberRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -18,16 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter
 class SecurityFilter(
     private val jwtTokenProvider: JwtTokenProvider,
     private val objectMapper: ObjectMapper,
-    private val memberRepository: MemberRepository,
 ) : OncePerRequestFilter() {
     private class UserNotFoundException : RuntimeException()
-
-    private class UserInfoEmptyException : RuntimeException()
 
     companion object {
         const val TOKEN_EXPIRED = "TOKEN_EXPIRED"
         const val USER_NOT_FOUND = "USER_NOT_FOUND"
-        const val USER_INFO_EMPTY = "USER_INFO_EMPTY"
 
         val EMPTY_ROLE = emptySet<GrantedAuthority>()
     }
@@ -47,12 +41,6 @@ class SecurityFilter(
         accessToken?.let { token ->
             runCatching {
                 val userRowid = jwtTokenProvider.decodeToken(token)
-
-                val user =
-                    memberRepository.findByIdOrNull(userRowid)
-                        ?: throw UserNotFoundException()
-                if (user.isInfoEmpty) throw UserInfoEmptyException()
-
                 val authentication = UsernamePasswordAuthenticationToken(userRowid, null, EMPTY_ROLE)
                 SecurityContextHolder.getContext().authentication = authentication
             }.getOrElse { e ->
@@ -60,7 +48,6 @@ class SecurityFilter(
                     when (e) {
                         is ExpiredJwtException -> TOKEN_EXPIRED
                         is UserNotFoundException -> USER_NOT_FOUND
-                        is UserInfoEmptyException -> USER_INFO_EMPTY
                         else -> null
                     }
 
