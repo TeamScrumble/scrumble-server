@@ -22,3 +22,12 @@ enum class ProjectError(
     INSUFFICIENT_PROJECT_PERMISSION("P004", "해당 작업을 수행할 권한이 없습니다."),
     NOT_FOUND_INVITATION_CODE("P005", "초대 코드를 찾을 수 없습니다."),
 }
+
+enum class BacklogError(
+    override val code: String,
+    override val description: String
+): ErrorCode {
+    NOT_FOUND_PRODUCT_BACKLOG("P001", "존재하지 않는 프로덕트 백로그입니다."),
+    // "존재하지 않은 멤버가 포함되어 있습니다."
+    NOT_FOUND_ASSIGNEE("P002", "존재하지 않는 담당자입니다."),
+}

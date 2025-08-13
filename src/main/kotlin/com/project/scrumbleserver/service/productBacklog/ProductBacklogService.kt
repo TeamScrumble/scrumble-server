@@ -6,6 +6,9 @@ import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogReques
 import com.project.scrumbleserver.domain.assignee.Assignee
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.domain.tag.Tag
+import com.project.scrumbleserver.global.error.BacklogError
+import com.project.scrumbleserver.global.error.CommonError
+import com.project.scrumbleserver.global.error.ProjectError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.repository.assignee.AssigneeRepository
@@ -32,11 +35,11 @@ class ProductBacklogService(
         transaction {
             val project =
                 projectRepository.findByIdOrNull(request.projectRowid)
-                    ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+                    ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
             val creator =
                 memberRepository.findByIdOrNull(userRowid)
-                    ?: throw BusinessException("사용자를 찾을 수 없습니다.")
+                    ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
 
             val productBacklog =
                 productBacklogRepository.save(
@@ -64,7 +67,7 @@ class ProductBacklogService(
         transaction {
             val productBacklog =
                 productBacklogRepository.findByIdOrNull(request.productBacklogRowid)
-                    ?: throw BusinessException("프로덕트 백로그를 찾을 수 없습니다.")
+                    ?: throw BusinessException(BacklogError.NOT_FOUND_PRODUCT_BACKLOG)
 
             val registeredAssignees = assigneeRepository.findAllByProductBacklog(productBacklog)
             registeredAssignees.forEach { assignees ->
@@ -81,7 +84,7 @@ class ProductBacklogService(
         val members = memberRepository.findAllByRowidIn(memberRowidSet.toList())
 
         if (members.size != memberRowidSet.size) {
-            throw BusinessException("존재하지 않은 멤버가 포함되어 있습니다.")
+            throw BusinessException(BacklogError.NOT_FOUND_ASSIGNEE)
         }
 
         val assignees =
