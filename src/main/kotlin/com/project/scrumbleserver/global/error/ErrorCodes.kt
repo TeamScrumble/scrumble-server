@@ -33,3 +33,11 @@ enum class BacklogError(
     // "존재하지 않은 멤버가 포함되어 있습니다."
     NOT_FOUND_ASSIGNEE("B002", "존재하지 않는 담당자입니다."),
 }
+
+enum class TagError(
+    override val code: String,
+    override val description: String
+): ErrorCode {
+    NOT_FOUND_TAG("T001", "존재하지 않는 태그입니다."),
+    NOT_FOUND_TAGS("T002", "존재하지 않는 태그가 포함되어 있습니다."),
+}

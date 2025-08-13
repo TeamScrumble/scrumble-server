@@ -3,6 +3,7 @@ package com.project.scrumbleserver.service.tag
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.tag.ProductBacklogTag
+import com.project.scrumbleserver.global.error.TagError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.tag.ProductBacklogTagRepository
 import com.project.scrumbleserver.repository.tag.TagRepository
@@ -23,7 +24,7 @@ class ProductBacklogTagService(
         val tags = tagRepository.findAllByIdWithProject(requestedTagIds, project.rowid)
 
         if (tags.size != requestedTagIds.size) {
-            throw BusinessException("존재하지 않는 태그가 포함되어 있습니다.")
+            throw BusinessException(TagError.NOT_FOUND_TAGS)
         }
 
         val productBacklogTags =

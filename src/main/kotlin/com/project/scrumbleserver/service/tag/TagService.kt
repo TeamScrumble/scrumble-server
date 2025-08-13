@@ -4,6 +4,7 @@ import com.project.scrumbleserver.api.tag.ApiGetAllProjectTagResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.tag.BasicTag
 import com.project.scrumbleserver.domain.tag.Tag
+import com.project.scrumbleserver.global.error.ProjectError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.repository.project.ProjectRepository
 import com.project.scrumbleserver.repository.tag.TagRepository
@@ -32,7 +33,8 @@ class TagService(
 
     @Transactional(readOnly = true)
     fun findAllByProject(projectRowid: Long): ApiGetAllProjectTagResponse {
-        val project = projectRepository.findByIdOrNull(projectRowid) ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+        val project = projectRepository.findByIdOrNull(projectRowid)
+            ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
         val projectTags = tagRepository.findAllByProject(project)
 
