@@ -27,24 +27,26 @@ class ProjectMemberService(
     ) = transaction.readOnly {
         val member =
             memberRepository.findByIdOrNull(memberRowid)
-                ?: throw BusinessException(CommonError.MEMBER_NOT_FOUND)
+                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
 
         val project =
             projectRepository.findByIdOrNull(projectRowid)
-                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+                ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
         val projectMember =
             projectMemberRepository.findByProjectAndMember(project, member)
-                ?: throw BusinessException(ProjectError.NOT_PROJECT_MEMBER)
+                ?: throw BusinessException(ProjectError.IS_NOT_PROJECT_MEMBER)
 
         if (!projectMember.permission.hasAtLeast(required)) {
             throw BusinessException(ProjectError.INSUFFICIENT_PROJECT_PERMISSION)
         }
     }
 
-    fun findAllByProjectRowid(projectRowid: Long): ApiGetProjectMembersResponse = transaction.readOnly {
+    fun findAllByProjectRowid(
+        projectRowid: Long
+    ): ApiGetProjectMembersResponse = transaction.readOnly {
         val project = projectRepository.findByIdOrNull(projectRowid)
-            ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
         val projectMembers = projectMemberRepository.findByProject(project)
 
@@ -67,14 +69,14 @@ class ProjectMemberService(
         loginMemberRowid: Long,
     ): Long = transaction {
         memberRepository.findByIdOrNull(loginMemberRowid)
-            ?: throw BusinessException(CommonError.MEMBER_NOT_FOUND)
+            ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
 
         val project = projectRepository.findByIdOrNull(projectRowid)
-                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
         val projectMembers = projectMemberRepository.findByProject(project)
         val targetMember = projectMembers.find { it.member.rowid == targetMemberRowid }
-            ?: throw BusinessException(ProjectError.NOT_PROJECT_MEMBER)
+            ?: throw BusinessException(ProjectError.IS_NOT_PROJECT_MEMBER)
 
         if (targetMember.permission == targetPermission) {
             return@transaction targetMember.rowid
@@ -108,11 +110,11 @@ class ProjectMemberService(
         role: String,
     ) = transaction {
         val project = projectRepository.findByIdOrNull(projectRowid)
-            ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
         val member = memberRepository.findByIdOrNull(memberRowid)
-            ?: throw BusinessException(CommonError.MEMBER_NOT_FOUND)
+            ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
         val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
-            ?: throw BusinessException(ProjectError.NOT_PROJECT_MEMBER)
+            ?: throw BusinessException(ProjectError.IS_NOT_PROJECT_MEMBER)
 
         projectMember.role = role
 
