@@ -44,3 +44,10 @@ oauth:
 
 jwt:
   secret: ${JWT_SECRET}
+
+aws:
+  s3:
+    endpoint: ${S3_HOST}
+    access-key: ${S3_ACCESS}
+    secret-key: ${S3_SECRET}
+    region: us-east-1

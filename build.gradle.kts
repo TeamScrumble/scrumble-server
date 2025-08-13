@@ -41,7 +41,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
-
+    implementation("software.amazon.awssdk:s3:2.28.29")
+    implementation("software.amazon.awssdk:auth:2.28.29")
+    implementation("software.amazon.awssdk:s3-transfer-manager:2.32.9")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
