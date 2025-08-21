@@ -1,5 +1,6 @@
 package com.project.scrumbleserver.infra.storage
 
+import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -45,6 +46,6 @@ class ImageUploader(
             restTemplate
                 .exchange(API_URL, HttpMethod.POST, request, Response::class.java)
 
-        return response.body?.data?.link ?: throw BusinessException("이미지 업로드에 실패 했습니다.")
+        return response.body?.data?.link ?: throw BusinessException(CommonError.IMAGE_UPLOAD_FAILED)
     }
 }

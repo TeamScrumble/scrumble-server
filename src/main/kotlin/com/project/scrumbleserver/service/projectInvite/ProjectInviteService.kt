@@ -3,6 +3,8 @@ package com.project.scrumbleserver.service.projectInvite
 import com.project.scrumbleserver.domain.projectInvite.ProjectInvite
 import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.global.error.CommonError
+import com.project.scrumbleserver.global.error.ProjectError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.repository.member.MemberRepository
@@ -28,9 +30,9 @@ class ProjectInviteService(
             transaction {
                 val project =
                     projectRepository.findByIdOrNull(projectRowid)
-                        ?: throw BusinessException("프로젝트를 찾을 수 없습니다.")
+                        ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
-                val member = memberRepository.findByEmail(email) ?: throw BusinessException("회원을 찾을 수 없습니다.")
+                val member = memberRepository.findByEmail(email) ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
 
                 val projectInvite =
                     projectInviteRepository.save(
@@ -50,7 +52,7 @@ class ProjectInviteService(
         transaction {
             val projectInvite =
                 projectInviteRepository.findByUuid(code)
-                    ?: throw BusinessException("초대 코드를 찾을 수 없습니다.")
+                    ?: throw BusinessException(ProjectError.NOT_FOUND_INVITATION_CODE)
 
             val projectMember =
                 projectMemberRepository.save(

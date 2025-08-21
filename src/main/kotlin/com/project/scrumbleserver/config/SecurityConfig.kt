@@ -30,7 +30,7 @@ class SecurityConfig {
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/v1/auth/google/login")
+                    .requestMatchers("/api/v1/auth/google/login", "/swagger-ui/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated()

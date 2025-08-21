@@ -6,6 +6,7 @@ import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.infra.storage.ImageUploader
@@ -41,7 +42,8 @@ class ProjectService(
         val thumbnailUrl = imageUploader.upload(thumbnailData)
 
         return transaction {
-            val member = memberRepository.findByIdOrNull(userRowid) ?: throw BusinessException("Member with rowid $userRowid not found")
+            val member = memberRepository.findByIdOrNull(userRowid)
+                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
 
             val project =
                 projectRepository.save(

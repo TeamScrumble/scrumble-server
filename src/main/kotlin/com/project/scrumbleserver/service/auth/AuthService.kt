@@ -1,6 +1,7 @@
 package com.project.scrumbleserver.service.auth
 
 import com.project.scrumbleserver.domain.member.Member
+import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
 import com.project.scrumbleserver.infra.cache.CacheStorage
@@ -48,7 +49,7 @@ class AuthService(
     fun refresh(refreshToken: String): AuthToken {
         val memberId =
             cacheStorage.get("${REFRESH_TOKEN_PREFIX}$refreshToken")?.toLongOrNull()
-                ?: throw BusinessException("유효하지 않은 인증 정보 입니다.")
+                ?: throw BusinessException(CommonError.INVALID_AUTHENTICATION)
 
         val accessToken = jwtTokenProvider.provideAccessToken(memberId)
         val refreshToken = jwtTokenProvider.provideRefreshToken()
