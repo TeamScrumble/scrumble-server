@@ -31,11 +31,6 @@ class SecurityFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        if (request.requestURI.startsWith("/api/v1/auth")) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
         val accessToken = extractToken(request)
 
         accessToken?.let { token ->
