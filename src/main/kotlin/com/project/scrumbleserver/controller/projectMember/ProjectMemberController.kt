@@ -2,10 +2,13 @@ package com.project.scrumbleserver.controller.projectMember
 
 import com.project.scrumbleserver.api.projectMember.API_GET_PROJECT_MEMBERS
 import com.project.scrumbleserver.api.projectMember.API_PUT_PROJECT_MEMBER_PERMISSION_PATH
+import com.project.scrumbleserver.api.projectMember.API_PUT_UPDATE_ROLE_PATH
 import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersRequest
 import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersResponse
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionRequest
 import com.project.scrumbleserver.api.projectMember.ApiPutProjectMemberPermissionResponse
+import com.project.scrumbleserver.api.projectMember.ApiPutUpdateRoleRequest
+import com.project.scrumbleserver.api.projectMember.ApiPutUpdateRoleResponse
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.security.RequestUserRowid
@@ -40,15 +43,33 @@ class ProjectMemberController(
         summary = "프로젝트 회원 권한 수정",
         description = "프로젝트에 속한 회원의 권한을 수정합니다.",
     )
-    fun edit(
+    fun editPermission(
         @RequestBody @Valid
         request: ApiPutProjectMemberPermissionRequest,
         @RequestUserRowid userRowid: Long,
     ): ApiResponse<ApiPutProjectMemberPermissionResponse> {
         projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.OWNER)
 
-        val projectMemberRowid = projectMemberService.edit(request.projectRowid, request.memberRowid, request.permission, userRowid)
+        val projectMemberRowid = projectMemberService.editPermission(request.projectRowid, request.memberRowid, request.permission, userRowid)
         val response = ApiPutProjectMemberPermissionResponse(projectMemberRowid)
+        return ApiResponse.of(response)
+    }
+
+    @PutMapping(API_PUT_UPDATE_ROLE_PATH)
+    @Operation(
+        summary = "프로젝트 회원 역할 수정",
+        description = "프로젝트에 속한 회원의 역할을 수정합니다.",
+    )
+    fun editRole(
+        @RequestBody @Valid
+        request: ApiPutUpdateRoleRequest,
+        @RequestUserRowid userRowid: Long,
+    ): ApiResponse<ApiPutUpdateRoleResponse> {
+        projectMemberService.assertPermission(request.projectRowid, userRowid, ProjectMemberPermission.CAN_EDIT)
+
+        val projectMemberRowid = projectMemberService.editRole(request.projectRowid, request.memberRowid, request.role)
+        val response = ApiPutUpdateRoleResponse(projectMemberRowid)
+
         return ApiResponse.of(response)
     }
 }
