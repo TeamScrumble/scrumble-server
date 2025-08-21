@@ -68,10 +68,19 @@ class ProjectService(
         }
     }
 
-    fun findAll(): ApiGetAllProjectResponse =
+    fun findAllByMember(
+        userRowid: Long
+    ): ApiGetAllProjectResponse =
         transaction.readOnly {
-            return@readOnly ApiGetAllProjectResponse(
-                projectRepository.findAll().map {
+            val member = memberRepository.findByIdOrNull(userRowid)
+                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+
+            val memberProjectList = projectMemberRepository.findByMember(member)
+
+            val projectList = projectRepository.findAllById(memberProjectList.map { it.project.rowid})
+
+            ApiGetAllProjectResponse(
+                projectList.map {
                     ApiGetAllProjectResponse.Project(
                         rowid = it.rowid,
                         title = it.title,
@@ -79,7 +88,7 @@ class ProjectService(
                         thumbnailUrl = it.thumbnail,
                         regDate = it.regDate,
                     )
-                },
+                }
             )
         }
 }

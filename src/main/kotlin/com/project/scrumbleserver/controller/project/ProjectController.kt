@@ -38,11 +38,13 @@ class ProjectController(
 
     @GetMapping(API_GET_ALL_PROJECT_PATH)
     @Operation(
-        summary = "전체 프로젝트 조회",
-        description = "모든 프로젝트 목록을 반환합니다.",
+        summary = "회원이 속한 전체 프로젝트 조회",
+        description = "회원의 모든 프로젝트 목록을 반환합니다.",
     )
-    fun getAll(): ApiResponse<ApiGetAllProjectResponse> {
-        val response = projectService.findAll()
+    fun getAll(
+        @RequestUserRowid userRowid: Long
+    ): ApiResponse<ApiGetAllProjectResponse> {
+        val response = projectService.findAllByMember(userRowid)
         return ApiResponse.of(response)
     }
 }
