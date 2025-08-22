@@ -20,7 +20,8 @@ jobs:
     runs-on: build
     if: 
       ${{ inputs.deploy_target == 'total-deploy' || 
-      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') }}
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') ||
+      (github.event_name == 'pull_request' && github.event.action == 'opened') }}
     steps:
     - name: 소스 코드 체크아웃
       uses: actions/checkout@v4
