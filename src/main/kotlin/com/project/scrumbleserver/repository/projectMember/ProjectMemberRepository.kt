@@ -23,6 +23,6 @@ interface ProjectMemberRepository : JpaRepository<ProjectMember, Long> {
         JOIN FETCH pm.member
         JOIN FETCH pm.project
         WHERE pm.member = :member
-    """.trimIndent())
+    """)
     fun findByMember(member: Member): List<ProjectMember>
 }
