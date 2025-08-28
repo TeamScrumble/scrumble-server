@@ -77,7 +77,7 @@ class ProjectService(
 
             val memberProjectList = projectMemberRepository.findByMember(member)
 
-            val projectList = projectRepository.findAllById(memberProjectList.map { it.project.rowid})
+            val projectList = memberProjectList.map { it.project }
 
             ApiGetAllProjectResponse(
                 projectList.map {
