@@ -16,4 +16,13 @@ interface ProjectMemberRepository : JpaRepository<ProjectMember, Long> {
 
     @Query("SELECT pm FROM project_member pm JOIN FETCH pm.member WHERE pm.project = :project")
     fun findByProject(project: Project): List<ProjectMember>
+
+    @Query("""
+        SELECT pm
+        FROM project_member pm
+        JOIN FETCH pm.member
+        JOIN FETCH pm.project
+        WHERE pm.member = :member
+    """.trimIndent())
+    fun findByMember(member: Member): List<ProjectMember>
 }
