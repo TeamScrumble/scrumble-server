@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "s3-api-collection",
+		"name": "S3 API Collection",
+		"description": "Scrumble Server의 S3 관련 API 컬렉션",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "파일 업로드",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "objectName",
+							"value": "test-image.jpg",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/upload/object",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"upload",
+						"object"
+					]
+				},
+				"description": "지정된 s3 버킷에 파일을 업로드합니다."
+			},
+			"response": []
+		},
+		{
+			"name": "파일 삭제",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"objectName\": \"test-image.jpg\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/delete/object",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delete",
+						"object"
+					]
+				},
+				"description": "지정된 s3 버킷의 객체를 삭제합니다."
+			},
+			"response": []
+		},
+		{
+			"name": "파일 다운로드",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"objectName\": \"test-image.jpg\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/download/object",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"download",
+						"object"
+					]
+				},
+				"description": "지정된 s3 버킷에서 파일을 다운로드합니다."
+			},
+			"response": []
+		},
+		{
+			"name": "Presigned Get URL 생성",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"objectName\": \"test-image.jpg\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/presigned/get/generate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"presigned",
+						"get",
+						"generate"
+					]
+				},
+				"description": "지정된 s3 버킷에서 파일을 다운로드할 수 있는 Presigned URL을 생성합니다."
+			},
+			"response": []
+		},
+		{
+			"name": "Presigned Put URL 생성",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"objectName\": \"test-image.jpg\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/presigned/put/generate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"presigned",
+						"put",
+						"generate"
+					]
+				},
+				"description": "지정된 s3 버킷에 파일을 업로드할 수 있는 Presigned URL을 생성합니다."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
