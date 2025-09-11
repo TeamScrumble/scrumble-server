@@ -2,6 +2,7 @@ package com.project.scrumbleserver.service.member
 
 import com.project.scrumbleserver.api.member.ApiGetMemberInfoResponse
 import com.project.scrumbleserver.api.member.ApiPostMemberInfoRequest
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
@@ -20,7 +21,7 @@ class MemberService(
     ) = transaction {
         val member =
             memberRepository.findByIdOrNull(memberRowid)
-                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
         member.also {
             it.nickname = request.nickname
@@ -32,7 +33,7 @@ class MemberService(
         transaction.readOnly {
             val member =
                 memberRepository.findByIdOrNull(memberRowid)
-                    ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                    ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
             ApiGetMemberInfoResponse(
                 rowid = member.rowid,

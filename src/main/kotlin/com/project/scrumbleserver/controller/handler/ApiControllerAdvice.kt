@@ -2,6 +2,8 @@ package com.project.scrumbleserver.controller.handler
 
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.global.api.ErrorResponse
+import com.project.scrumbleserver.global.error.CommonError
+import com.project.scrumbleserver.global.error.InternalServerError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.exception.ServerException
 import mu.KotlinLogging
@@ -19,61 +21,56 @@ private val logger = KotlinLogging.logger {}
 class ApiControllerAdvice {
     @ExceptionHandler(BusinessException::class)
     fun exceptionHandler(e: BusinessException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse = ApiResponse.of(ErrorResponse(e.message), e.status)
+        val errorResponse = ApiResponse.of(ErrorResponse.from(e.code), e.status)
         logger.warn(e.message)
         return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, e.status)
     }
 
     @ExceptionHandler(ServerException::class)
     fun exceptionHandler(e: ServerException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse = ApiResponse.of(ErrorResponse(e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        val errorResponse = ApiResponse.of(ErrorResponse.from(e.code), HttpStatus.INTERNAL_SERVER_ERROR)
         logger.error(e.stackTraceToString())
         return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, errorResponse.status)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun exceptionHandler(e: MethodArgumentNotValidException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorMessages =
-            e.bindingResult.fieldErrors.associate {
-                it.field to (it.defaultMessage ?: "잘못된 값입니다.")
-            }
+    fun handleInvalidArgs(e: MethodArgumentNotValidException): ResponseEntity<ApiResponse<ErrorResponse>> {
+        val errorMessages = e.bindingResult.fieldErrors.associate {
+            it.field to (it.defaultMessage ?: CommonError.INVALID_PARAMETER.description) // Changed
+        }
         logger.warn(e.message)
-        val errorResponse =
-            ApiResponse.of(
-                ErrorResponse(errorMessages.toString()),
-                HttpStatus.BAD_REQUEST,
-            )
-
-        return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, errorResponse.status)
+        val errorResponse = ApiResponse.of(
+            ErrorResponse(CommonError.INVALID_PARAMETER.code, errorMessages.toString()),
+            HttpStatus.BAD_REQUEST
+        )
+        return ResponseEntity(errorResponse, errorResponse.status)
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun exceptionHandler(e: HttpMessageNotReadableException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse =
-            ApiResponse.of(
-                ErrorResponse(e.message ?: "잘못된 요청 형식입니다."),
-                HttpStatus.BAD_REQUEST,
-            )
+    fun handleInvalidFormat(e: HttpMessageNotReadableException): ResponseEntity<ApiResponse<ErrorResponse>> {
+        val errorResponse = ApiResponse.of(
+            ErrorResponse.from(CommonError.INVALID_FORMAT),
+            HttpStatus.BAD_REQUEST
+        )
         logger.warn(e.message)
-        return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, errorResponse.status)
+        return ResponseEntity(errorResponse, errorResponse.status)
     }
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
-    fun exceptionHandler(e: MissingServletRequestParameterException): ResponseEntity<ApiResponse<ErrorResponse>> {
-        val errorResponse =
-            ApiResponse.of(
-                ErrorResponse(e.message ?: "필수 요청 파라미터가 누락되었습니다."),
-                HttpStatus.BAD_REQUEST,
-            )
+    fun handleMissingParam(e: MissingServletRequestParameterException): ResponseEntity<ApiResponse<ErrorResponse>> {
+        val errorResponse = ApiResponse.of(
+            ErrorResponse.from(CommonError.MISSING_PARAMETER),
+            HttpStatus.BAD_REQUEST,
+        )
         logger.warn(e.message)
-        return ResponseEntity<ApiResponse<ErrorResponse>>(errorResponse, errorResponse.status)
+        return ResponseEntity(errorResponse, errorResponse.status)
     }
 
     @ExceptionHandler(Exception::class)
     fun exceptionHandler(e: Exception): ResponseEntity<ApiResponse<ErrorResponse>> {
         val errorResponse =
             ApiResponse.of(
-                ErrorResponse("서버 내부에서 에러가 발생했습니다."),
+                ErrorResponse.from(InternalServerError),
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         logger.error(e.stackTraceToString())
