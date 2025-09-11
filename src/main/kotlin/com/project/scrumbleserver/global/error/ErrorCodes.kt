@@ -5,13 +5,30 @@ interface ErrorCode {
     val description: String
 }
 
+object InternalServerError : ErrorCode {
+    override val code: String = "S001"
+    override val description: String = "서버에서 예상하지 못한 문제가 발생했습니다."
+}
+
 enum class CommonError(
     override val code: String,
     override val description: String
-): ErrorCode {
-    NOT_FOUND_MEMBER("C001", "존재하지 않는 회원입니다."),
-    INVALID_AUTHENTICATION("C002", "유효하지 않은 인증 정보입니다."),
-    IMAGE_UPLOAD_FAILED("C003", "이미지 업로드에 실패했습니다."),
+) : ErrorCode {
+    INVALID_PARAMETER("C001", "잘못된 요청 파라미터입니다."),
+    INVALID_FORMAT("C002", "잘못된 요청 형식입니다."),
+    MISSING_PARAMETER("C003", "필수 요청 파라미터가 누락되었습니다."),
+    IMAGE_UPLOAD_FAILED("C004", "이미지 업로드에 실패했습니다."),
+}
+
+enum class AuthError(
+    override val code: String,
+    override val description: String
+) : ErrorCode {
+    NOT_FOUND_MEMBER("A001", "존재하지 않는 사용자 입니다."),
+    FORBIDDEN("A002", "접근 권한이 없습니다."),
+    UNAUTHORIZED("A003", "인증 정보가 없습니다."),
+    INVALID_AUTHENTICATION("A004", "인증 정보가 잘못되었습니다."),
+    TOKEN_EXPIRED("A005", "토큰이 만료되었습니다."),
 }
 
 enum class ProjectError(

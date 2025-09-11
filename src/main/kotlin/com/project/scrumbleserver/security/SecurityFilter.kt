@@ -3,6 +3,7 @@ package com.project.scrumbleserver.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.global.api.ErrorResponse
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.infra.jwt.JwtTokenProvider
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
@@ -20,9 +21,6 @@ class SecurityFilter(
     private class UserNotFoundException : RuntimeException()
 
     companion object {
-        const val TOKEN_EXPIRED = "TOKEN_EXPIRED"
-        const val USER_NOT_FOUND = "USER_NOT_FOUND"
-
         val EMPTY_ROLE = emptySet<GrantedAuthority>()
     }
 
@@ -39,12 +37,11 @@ class SecurityFilter(
                 val authentication = UsernamePasswordAuthenticationToken(userRowid, null, EMPTY_ROLE)
                 SecurityContextHolder.getContext().authentication = authentication
             }.getOrElse { e ->
-                val code =
-                    when (e) {
-                        is ExpiredJwtException -> TOKEN_EXPIRED
-                        is UserNotFoundException -> USER_NOT_FOUND
-                        else -> null
-                    }
+                val code = when (e) {
+                    is ExpiredJwtException -> AuthError.TOKEN_EXPIRED
+                    is UserNotFoundException -> AuthError.NOT_FOUND_MEMBER
+                    else -> null
+                }
 
                 code?.let {
                     sendErrorResponse(response, code)
@@ -67,11 +64,11 @@ class SecurityFilter(
 
     private fun sendErrorResponse(
         response: HttpServletResponse,
-        code: String,
+        code: AuthError,
     ) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json"
-        val error = ApiResponse.of(ErrorResponse(code))
+        val error = ApiResponse.of(ErrorResponse.from(code))
         objectMapper.writeValue(response.writer, error)
     }
 }

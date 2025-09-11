@@ -1,5 +1,7 @@
 package com.project.scrumbleserver.global.exception
 
+import com.project.scrumbleserver.global.error.InternalServerError
+
 class ServerException(
-    override val message: String = "unknown error occurred",
-) : RuntimeException(message)
+    message: String? = null,
+) : BaseException(InternalServerError, message)
