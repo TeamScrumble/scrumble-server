@@ -6,6 +6,7 @@ import com.project.scrumbleserver.api.project.ApiPostProjectResponse
 import com.project.scrumbleserver.domain.project.Project
 import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
@@ -43,7 +44,7 @@ class ProjectService(
 
         return transaction {
             val member = memberRepository.findByIdOrNull(userRowid)
-                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
             val project =
                 projectRepository.save(

@@ -3,6 +3,7 @@ package com.project.scrumbleserver.service.projectInvite
 import com.project.scrumbleserver.domain.projectInvite.ProjectInvite
 import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.error.ProjectError
 import com.project.scrumbleserver.global.exception.BusinessException
@@ -32,7 +33,7 @@ class ProjectInviteService(
                     projectRepository.findByIdOrNull(projectRowid)
                         ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
 
-                val member = memberRepository.findByEmail(email) ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                val member = memberRepository.findByEmail(email) ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
                 val projectInvite =
                     projectInviteRepository.save(

@@ -3,6 +3,7 @@ package com.project.scrumbleserver.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.project.scrumbleserver.global.api.ApiResponse
 import com.project.scrumbleserver.global.api.ErrorResponse
+import com.project.scrumbleserver.global.error.AuthError
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.access.AccessDeniedException
@@ -23,7 +24,7 @@ class ForbiddenHandler(
         response.status = HttpServletResponse.SC_FORBIDDEN
 
         val responseWriter = response.writer
-        val errorResponse = ApiResponse.of(ErrorResponse("Forbidden"))
+        val errorResponse = ApiResponse.of(ErrorResponse.from(AuthError.FORBIDDEN))
         objectMapper.writeValue(responseWriter, errorResponse)
         responseWriter.flush()
     }

@@ -3,6 +3,7 @@ package com.project.scrumbleserver.service.projectMember
 import com.project.scrumbleserver.api.projectMember.ApiGetProjectMembersResponse
 import com.project.scrumbleserver.domain.projectMember.ProjectMember
 import com.project.scrumbleserver.domain.projectMember.ProjectMemberPermission
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.error.ProjectError
 import com.project.scrumbleserver.global.exception.BusinessException
@@ -27,7 +28,7 @@ class ProjectMemberService(
     ) = transaction.readOnly {
         val member =
             memberRepository.findByIdOrNull(memberRowid)
-                ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
         val project =
             projectRepository.findByIdOrNull(projectRowid)
@@ -69,7 +70,7 @@ class ProjectMemberService(
         loginMemberRowid: Long,
     ): Long = transaction {
         memberRepository.findByIdOrNull(loginMemberRowid)
-            ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+            ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
         val project = projectRepository.findByIdOrNull(projectRowid)
             ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
@@ -112,7 +113,7 @@ class ProjectMemberService(
         val project = projectRepository.findByIdOrNull(projectRowid)
             ?: throw BusinessException(ProjectError.NOT_FOUND_PROJECT)
         val member = memberRepository.findByIdOrNull(memberRowid)
-            ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+            ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
         val projectMember = projectMemberRepository.findByProjectAndMember(project, member)
             ?: throw BusinessException(ProjectError.IS_NOT_PROJECT_MEMBER)
 

@@ -6,6 +6,7 @@ import com.project.scrumbleserver.api.productBacklog.ApiPostProductBacklogReques
 import com.project.scrumbleserver.domain.assignee.Assignee
 import com.project.scrumbleserver.domain.productBacklog.ProductBacklog
 import com.project.scrumbleserver.domain.tag.Tag
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.BacklogError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.error.ProjectError
@@ -39,7 +40,7 @@ class ProductBacklogService(
 
             val creator =
                 memberRepository.findByIdOrNull(userRowid)
-                    ?: throw BusinessException(CommonError.NOT_FOUND_MEMBER)
+                    ?: throw BusinessException(AuthError.NOT_FOUND_MEMBER)
 
             val productBacklog =
                 productBacklogRepository.save(

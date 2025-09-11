@@ -1,6 +1,7 @@
 package com.project.scrumbleserver.service.auth
 
 import com.project.scrumbleserver.domain.member.Member
+import com.project.scrumbleserver.global.error.AuthError
 import com.project.scrumbleserver.global.error.CommonError
 import com.project.scrumbleserver.global.exception.BusinessException
 import com.project.scrumbleserver.global.transaction.Transaction
@@ -49,7 +50,7 @@ class AuthService(
     fun refresh(refreshToken: String): AuthToken {
         val memberId =
             cacheStorage.get("${REFRESH_TOKEN_PREFIX}$refreshToken")?.toLongOrNull()
-                ?: throw BusinessException(CommonError.INVALID_AUTHENTICATION)
+                ?: throw BusinessException(AuthError.INVALID_AUTHENTICATION)
 
         val accessToken = jwtTokenProvider.provideAccessToken(memberId)
         val refreshToken = jwtTokenProvider.provideRefreshToken()
